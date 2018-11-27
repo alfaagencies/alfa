@@ -21,11 +21,11 @@ module.exports = {
 	{
 		if (req.url == '/login' || req.url == '/forgotPassword') 
 		{
-            if (req.session.user && req.session.user.isAdmin) {
+            if (req.session.user) {
                 return res.redirect(admin_url);
             }
             return next();
-        } else if (req.session.user && req.session.user.isAdmin) {
+        } else if (req.session.user) {
             return next(); 
         } else {
             req.flash('error', 'Unauthorized Access');
