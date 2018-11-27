@@ -149,7 +149,7 @@
     <!--  End Modal -->
 </body>
 <script>
-    var brandId, styleId;
+    var brandId, styleId, isAdmin="{{user.isAdmin}}" === "true";
 </script>
 {% include "partials/core_js.html" %}
 {% import "macros/plugins.html" as plugins %}
@@ -184,9 +184,9 @@
                 search: "_INPUT_",
                 searchPlaceholder: "Search records",
             },
-            "columnDefs": "{{user.isAdmin}}" ? [
-                { className: "actions", "targets": [3] }
-            ] : [],
+            "columnDefs": isAdmin ?[
+                { className: "actions", "targets": [3]}
+            ]:[],
             //"bPaginate": false,
             "bInfo": false,
             processing: true,
@@ -199,7 +199,7 @@
                     //console.log(json)
                     var arr = [];
                     for (var i in json.data) {
-                        arr.push("user.isAdmin" ? {
+                        arr.push(isAdmin ? {
                             's_no': '',
                             'name': '<span>' + json.data[i].name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
                             'qty': json.data[i].qty,
@@ -216,19 +216,17 @@
                     return arr;
                 }
             },
-            "columns": "{{user.isAdmin}}" ?
-                [
+            "columns":isAdmin ? [
                     { "data": "s_no" },
                     { "data": "name", "width": "33%" },
                     { "data": "qty", "width": "33%" },
                     { "data": "actions", "width": "34%" }
-                ] :
-                [
+                ] : [
                     { "data": "s_no" },
                     { "data": "name", "width": "50%" },
                     { "data": "qty", "width": "50%" }
                 ]
-
+               
         }).column(0).visible(false);
 
         $('#styleTable').DataTable({
@@ -285,7 +283,7 @@
             });
         });
 
-        $(document).on('click', "{{user.isAdmin}}"?"#brandTable td:not('.actions')":"#brandTable tbody > tr", function () {
+        $(document).on('click', "#brandTable td:not('.actions')", function () {
             brandId = $(this).parent().children().eq(0).find('span').eq(1).html();
             $('#Validation').hide();
             $('#addValidation').hide();
