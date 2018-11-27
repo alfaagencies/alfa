@@ -33,7 +33,7 @@ module.exports = {
         }
 	},
 	adminAuth: function(req, res, next) {
-        if (req.session.user && req.session.user.isAdmin)return next();
+        if (req.session.user)return next();
         else {
             req.flash('error', 'Unauthorized Access');
             return res.redirect('/admin/login');
