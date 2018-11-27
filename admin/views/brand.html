@@ -285,7 +285,7 @@
             });
         });
 
-        $(document).on('click', "#brandTable td:not('.actions')", function () {
+        $(document).on('click', "{{user.isAdmin}}"?"#brandTable td:not('.actions')":"#brandTable tbody > tr", function () {
             brandId = $(this).parent().children().eq(0).find('span').eq(1).html();
             $('#Validation').hide();
             $('#addValidation').hide();
