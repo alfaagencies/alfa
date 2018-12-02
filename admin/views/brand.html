@@ -130,7 +130,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
-                    <h4>Sizes for product style code</h4>
+                    <h4>Sizes for product style color</h4>
                 </div>
                 <div class="modal-body">
                     <div class="card card-info">
@@ -203,14 +203,14 @@
                     for (var i in json.data) {
                         arr.push(isAdmin ? {
                             's_no': '',
-                            'name': '<span>' + json.data[i].name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
+                            'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span>',
                             'qty': json.data[i].qty,
                             'actions': '<div class="text-center"><a href="javascript:void(0)" class="btn btn-round  btn-icon btn-danger edit" rel="tooltip" title="Edit Brand"><i class="fa fa-edit"></i></a><br/><a onclick=demo.showSwal("warning-message-and-confirmation","{{admin_url}}brands/delete/' + json.data[i]._id + '","brand","{{admin_url}}brands") href="javascript:void(0)" class="btn btn-round btn-icon btn-danger remove" rel="tooltip" title="Delete Brand"><i class="fa fa-trash-o"></i></a></div>',
                             'sno':''
                         } :
                             {
                                 's_no': '',
-                                'name': '<span>' + json.data[i].name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
+                                'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span>',
                                 'qty': json.data[i].qty
                             });
                     }

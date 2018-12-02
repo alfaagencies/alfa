@@ -3,10 +3,6 @@ var Schema = mongoose.Schema;
 
 var brandSchema = new Schema({
 	name:String,
-	qty:{
-		type: Number,
-		default:0
-	},
 	isArchive: {
 		type: Boolean,
 		default: false

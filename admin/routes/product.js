@@ -57,11 +57,7 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 router.post('/products/add',FX.adminAuth,function(req,res,next){
     Product.create(req.body,function(err,result){
         if(err)return next(err);
-		if(result)
-		{
-			res.redirect('/admin/products');
-			Brand.findByIdAndUpdate(req.body.brand,{$inc:{qty:1}},err=>err && next(err));
-		}
+		if(result) return res.redirect('/admin/products');
     });
 });
 
@@ -76,11 +72,7 @@ router.post('/products/edit',FX.adminAuth,function(req,res,next){
 router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
 	Product.findByIdAndUpdate(req.params.id,{$set:{isArchive:true}},function(err,result){
 		if(err)return next(err);
-		if(result)
-		{
-			res.status(200).json({message:`product deleted`});
-			Brand.findByIdAndUpdate(result.brand,{$inc:{qty:-1}},err=>err && next(err));
-		}
+		if(result) return res.status(200).json({message:`product deleted`});
 	});
 });
 

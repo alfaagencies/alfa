@@ -31,10 +31,10 @@ router.post('/brands/find',FX.adminAuth,(req,res,next)=>{
 	var {length,start}=req.body;
 	var sort={};
 
-    search_arr=["name"];
-    sort_arr=["_id","name","qty"];
+    search_arr=["brand.name"];
+    sort_arr=["_id","brand.name","qty"];
     query={
-        isArchive:false
+        ["brand.isArchive"]:false
     };
 
 	var sort_key=sort_arr[parseInt(req.body["order[0][column]"])];
@@ -56,16 +56,66 @@ router.post('/brands/find',FX.adminAuth,(req,res,next)=>{
 		});
 	}
 
-	Brand.count(query)
-	.exec((err,result1)=>{
+	var lookup = { 
+		$lookup: {
+			from: 'brands',
+			localField:'_id',
+			foreignField: '_id',
+			as: 'brand'
+		} 
+	};
+
+	var group  = {
+		$group: {
+			_id:"$brand",
+			qty:{ $sum :1}
+		}
+	};
+
+	var match = {
+		$match:query
+	};
+
+	var unwind = {
+		$unwind:"$brand"
+	};
+
+	Product.aggregate([
+		{
+			$match:{
+				isArchive:false
+			}
+		},
+		group,
+		lookup,
+		unwind,
+		match
+	]
+		,(err,result1)=>{
 		if(err)return next(err);
-		Brand.find(query)
-		.sort(sort)
-		.skip(parseInt(start))
-		.limit(limit)
-		.exec((err,result)=>{
+		Product.aggregate([
+			{
+				$match:{
+					isArchive:false
+				}
+			},
+			group,
+			lookup,
+			unwind,
+			match,
+			{
+				$sort:sort
+			},
+			{
+				$skip:start*1
+			},
+			{
+				$limit:limit
+			}
+		]	
+		,(err,result)=>{
 			if(err)return next(err);
-			res.json({recordsFiltered:result1,recordsTotal:result.length,data:result});
+			res.json({recordsFiltered:result1.length,recordsTotal:result.length,data:result});
 		});
 	});
 
