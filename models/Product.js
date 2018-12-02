@@ -8,7 +8,7 @@ var productSchema = new Schema({
     },
 	styleCode:String,
     mrp:Number,
-    size:String,
+    size:Number,
     barCode:String,
 	isArchive: {
 		type: Boolean,

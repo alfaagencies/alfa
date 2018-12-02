@@ -210,7 +210,7 @@
                         } :
                             {
                                 's_no': '',
-                                'name': json.data[i].name,
+                                'name': '<span>' + json.data[i].name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
                                 'qty': json.data[i].qty
                             });
                     }
@@ -247,7 +247,7 @@
                 searchPlaceholder: "Search records",
             },
             "bInfo": false,
-            // processing: true,
+            processing: true,
             serverSide: true,
             ajax: {
                 url: '{{admin_url}}brands/styles/find',

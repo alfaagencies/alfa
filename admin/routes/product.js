@@ -12,7 +12,7 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 	var {length,start}=req.body;
 	var sort={};
 	search_arr=["styleCode","mrp","size","barCode"];
-	sort_arr=["_id","styleCode","mrp","size","barCode"];
+	sort_arr=["_id","brand","styleCode","mrp","size","barCode"];
 	query={ isArchive:false }
 
 	var sort_key=sort_arr[parseInt(req.body["order[0][column]"])];
@@ -25,11 +25,14 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 		query["$or"]=[];
 		search_arr.forEach(function(field){
 			var obj={};
-			obj[field] =
-			{
-		   	     '$regex': req.body['search[value]'],
+			["mrp","size"].indexOf(field) === -1 ?
+			obj[field] = {
+				'$regex': req.body['search[value]'],
 		        '$options': 'i'
-		    } 
+			}: obj =
+			{
+				'$where': `/${req.body['search[value]']}/.test(this.${field})`,
+			}; 
 			query["$or"].push(obj);
 		});
 	}
