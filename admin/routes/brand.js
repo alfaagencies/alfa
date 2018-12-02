@@ -1,17 +1,28 @@
 var express = require('express');
 var router = express.Router();
 var csv = {};
+var pdf = require('html-pdf'); 
+var nunjucks = require('nunjucks');
 
 router.get('/brands/csv',FX.adminAuth,(req,res,next)=>{
-	User.find({isArchive:false},{_id:0,firstName:1,email:1,countryCode:1,mobile:1,location:1,website:1,description:1,created:1},(err,result)=>{
-		if(err)return next(err);
-		let columns={firstName:"Business Name",description:"Description",email:"Email",countryCode:"Country Code",mobile:"Mobile Number",
-		location:"Location",website:"Website",created:"Created At"};
-
-		csv.stringify(result,{header:true,columns:columns},(err,output)=>{
-			res.json(output);
-		});
+	res.contentType('application/pdf');
+	res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
+	var result = nunjucks.render('test.html',{user:'block', password:123456});
+	pdf.create(result).toStream(function(err, stream){
+		if(err)console.log(err);
+		stream.pipe(res);
 	});
+	// res.send('Hello');
+	// res.render('forgot_password.html');
+	// User.find({isArchive:false},{_id:0,firstName:1,email:1,countryCode:1,mobile:1,location:1,website:1,description:1,created:1},(err,result)=>{
+	// 	if(err)return next(err);
+	// 	let columns={firstName:"Business Name",description:"Description",email:"Email",countryCode:"Country Code",mobile:"Mobile Number",
+	// 	location:"Location",website:"Website",created:"Created At"};
+
+	// 	csv.stringify(result,{header:true,columns:columns},(err,output)=>{
+	// 		res.json(output);
+	// 	});
+	// });
 });
 
 router.get('/brands',FX.adminAuth, (req, res, next)=>res.render('brand.html'));

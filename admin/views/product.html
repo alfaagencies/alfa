@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 {% import "macros/head.html" as head %}
-{{head.title('Alpha Agencies')}}
+{{head.title('Alfa Agencies')}}
 
 <body>
     <div class="wrapper">
@@ -33,13 +33,14 @@
                                             <tr>
                                                 <th></th>
                                                 <th data-sortable="false">Brand Name</th>
-                                                <th>Style Name With Code</th>
-                                                <th>Size</th>
+                                                <th>Style Name With Color</th>
                                                 <th>MRP</th>
+                                                <th>Size</th>
                                                 <th>Barcode</th>
                                                 {% if user.isAdmin %}
                                                 <th data-sortable="false">Actions</th>
                                                 {% endif %}
+                                                <th data-sortable="false"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -48,13 +49,14 @@
                                             <tr>
                                                 <th></th>
                                                 <th data-sortable="false">Brand Name</th>
-                                                <th>Style Name With Code</th>
-                                                <th>Size</th>
+                                                <th>Style Name With Color</th>
                                                 <th>MRP</th>
+                                                <th>Size</th>
                                                 <th>Barcode</th>
                                                 {% if user.isAdmin %}
                                                 <th data-sortable="false">Actions</th>
                                                 {% endif %}
+                                                <th data-sortable="false"></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -159,7 +161,7 @@
 </body>
 <script>
     /*For inlcuding variables at the top*/
-    var email_check = true;
+    var isAdmin="{{user.isAdmin}}" === "true";
     var message;
 </script>
 {% include "partials/core_js.html" %}
@@ -209,7 +211,7 @@
                 "dataSrc": function (json) {
                     var arr = [];
                     for (var i in json.data) {
-                        arr.push("{{user.isAdmin}}"?{
+                        arr.push(isAdmin?{
                             's_no':'',
                             'brandName':'<span>'+json.data[i].brand.name+ '</span><span style="display:none">'+json.data[i].brand._id+'</span><span style="display:none">' + json.data[i]._id + '</span>',
                             'styleCode': json.data[i].styleCode,
@@ -217,13 +219,15 @@
                             'size': json.data[i].size,
                             'barCode': json.data[i].barCode,
                             'actions': '<div class="text-center"><a href="javascript:void(0)" class="btn btn-round  btn-icon btn-danger edit" data-toggle="modal" data-target="#editProduct" rel="tooltip" title="Edit Product"><i class="fa fa-edit"></i></a><br/><a onclick=demo.showSwal("warning-message-and-confirmation","{{admin_url}}products/delete/' + json.data[i]._id + '","product","{{admin_url}}products") href="javascript:void(0)" class="btn btn-round btn-icon btn-danger remove" rel="tooltip" title="Delete Product"><i class="fa fa-trash-o"></i></a></div>',
+                            'sno':''
                         }:{
                             's_no':'',
                             'brandName':'<span>'+json.data[i].brand.name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
                             'styleCode': json.data[i].styleCode,
                             'mrp': json.data[i].mrp,
                             'size': json.data[i].size,
-                            'barCode': json.data[i].barCode
+                            'barCode': json.data[i].barCode,
+                            'sno':''
                         });
                     }
 
@@ -232,7 +236,7 @@
                 }
 
             },
-            "columns":"{{user.isAdmin}}"?
+            "columns":isAdmin?
                 [
                     { "data": "s_no" },
                     { "data": "brandName", "width": "16%" },
@@ -241,6 +245,7 @@
                     { "data": "size", "width": "16%" },
                     { "data": "barCode", "width": "16%" },
                     { "data": "actions", "width": "20%" },
+                    { "data": "sno"},
                 ]:
                 [
                     { "data": "s_no" },
@@ -249,6 +254,8 @@
                     { "data": "mrp", "width": "20%" },
                     { "data": "size", "width": "20%" },
                     { "data": "barCode", "width": "20%" },
+                    { "data": "sno"},
+
                 ]
         }).column(0).visible(false);
 

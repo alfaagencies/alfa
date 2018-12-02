@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 {% import "macros/head.html" as head %}
-{{head.title('Alpha Agencies')}}
+{{head.title('Alfa Agencies')}}
 
 <body>
     <div class="wrapper">
@@ -37,6 +37,7 @@
                                                 <th>Qty</th>
                                                 {% if user.isAdmin %}
                                                 <th data-sortable="false">Actions</th>
+                                                <th data-sortable="false"></th>
                                                 {% endif %}
                                             </tr>
                                         </thead>
@@ -47,6 +48,7 @@
                                                 <th>Qty</th>
                                                 {% if user.isAdmin %}
                                                 <th data-sortable="false">Actions</th>
+                                                <th data-sortable="false"></th>
                                                 {% endif %}
                                             </tr>
                                         </tfoot>
@@ -73,14 +75,14 @@
                                                 <thead>
                                                     <tr>
                                                         <th data-sortable="false"></th>
-                                                        <th>Style With Code</th>
+                                                        <th>Style With Color</th>
                                                         <th data-sortable="false">Qty</th>
                                                     </tr>
                                                 </thead>
                                                 <tfoot>
                                                     <tr>
                                                         <th data-sortable="false"></th>
-                                                        <th>Style With Code</th>
+                                                        <th>Style With Color</th>
                                                         <th data-sortable="false">Qty</th>
                                                     </tr>
                                                 </tfoot>
@@ -203,7 +205,8 @@
                             's_no': '',
                             'name': '<span>' + json.data[i].name + '</span><span style="display:none">' + json.data[i]._id + '</span>',
                             'qty': json.data[i].qty,
-                            'actions': '<div class="text-center"><a href="javascript:void(0)" class="btn btn-round  btn-icon btn-danger edit" rel="tooltip" title="Edit Brand"><i class="fa fa-edit"></i></a><br/><a onclick=demo.showSwal("warning-message-and-confirmation","{{admin_url}}brands/delete/' + json.data[i]._id + '","brand","{{admin_url}}brands") href="javascript:void(0)" class="btn btn-round btn-icon btn-danger remove" rel="tooltip" title="Delete Brand"><i class="fa fa-trash-o"></i></a></div>'
+                            'actions': '<div class="text-center"><a href="javascript:void(0)" class="btn btn-round  btn-icon btn-danger edit" rel="tooltip" title="Edit Brand"><i class="fa fa-edit"></i></a><br/><a onclick=demo.showSwal("warning-message-and-confirmation","{{admin_url}}brands/delete/' + json.data[i]._id + '","brand","{{admin_url}}brands") href="javascript:void(0)" class="btn btn-round btn-icon btn-danger remove" rel="tooltip" title="Delete Brand"><i class="fa fa-trash-o"></i></a></div>',
+                            'sno':''
                         } :
                             {
                                 's_no': '',
@@ -220,7 +223,8 @@
                     { "data": "s_no" },
                     { "data": "name", "width": "33%" },
                     { "data": "qty", "width": "33%" },
-                    { "data": "actions", "width": "34%" }
+                    { "data": "actions", "width": "34%" },
+                    { "data": "sno" }
                 ] : [
                     { "data": "s_no" },
                     { "data": "name", "width": "50%" },
@@ -243,7 +247,7 @@
                 searchPlaceholder: "Search records",
             },
             "bInfo": false,
-            processing: true,
+            // processing: true,
             serverSide: true,
             ajax: {
                 url: '{{admin_url}}brands/styles/find',
@@ -274,12 +278,13 @@
         }).column(0).visible(false);
 
         $('.csv').click(() => {
-            var fileName = 'ClickApp' + '_' + 'Events' + '_' + new Date().toLocaleString() + '.csv';
-            $.get('{{admin_url}}events/csv', function (data) {
-                $.fn.dataTable.fileSave(
-                    new Blob([data]),
-                    fileName
-                );
+            // var fileName = 'ClickApp' + '_' + 'Events' + '_' + new Date().toLocaleString() + '.csv';
+            $.get('{{admin_url}}brands/csv', function (data) {
+               console.log("data returned from csv=====>",data);
+                // $.fn.dataTable.fileSave(
+                //     new Blob([data]),
+                //     fileName
+                // );
             });
         });
 
