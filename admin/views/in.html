@@ -17,11 +17,12 @@
                                 <div class="toolbar">
                                     <div class="btn-group">
                                         &nbsp;&nbsp;&nbsp;
-                                        <input type="text" id="barcode" class="form-control" autofocus />
+                                        <input type="text" id="barcode" class="form-control"/>
                                         &nbsp;&nbsp;&nbsp;
-                                        <button class="btn btn-icon btn-round btn-danger go">
-                                            Go
-                                        </button>
+                                        <button class="btn btn-icon btn-round btn-danger go">Go</button>
+                                        <input type="text" id="invoice" class="form-control" autofocus/>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <button class="btn btn-icon btn-round btn-danger ok">Ok</button>
                                     </div>
                                     <br />
                                     <br />
@@ -58,6 +59,15 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-11">
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-icon btn-danger done">
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -71,6 +81,7 @@
 </script>
 {% include "partials/core_js.html" %}
 {% import "macros/plugins.html" as plugins %}
+{{plugins.script('sweetalert2.min')}}
 {{plugins.script('jquery.dataTables.min')}}
 {{plugins.script('light-bootstrap-dashboard')}}
 {{plugins.script('demo')}}
@@ -94,10 +105,40 @@
 
         $('#activate').change(checkActivation);
 
+        $('.done').click(function(){
+            var invoice = $('#invoice').val();
+            if(invoice)
+            demo.showSwal('invoice',`{{admin_url}}in/complete?invoice=${invoice}`,'data','{{admin_url}}in');
+        });
+
         $('.go').click(function(){
             var barCode =  $('#barcode').val();
-            getDataAndUpdateTable(barCode);
-            $('#barcode').val('');
+            var invoice = $('#invoice').val();
+            if(invoice)
+            {
+                getDataAndUpdateTable(barCode, invoice);
+                $('#barcode').val('');
+            }
+        });
+
+        $('.ok').click(function(){
+            var invoice = $('#invoice').val();
+            if(invoice)
+            {
+                if($(this).text() === 'Ok')
+                {
+                    $('#inTable').DataTable().clear().draw();
+                    getDataForInvoiceAndUpdateTable(invoice);
+                    $('#invoice').attr('disabled',true);
+                    $(this).text('Change');
+                }
+                else
+                {
+                    $('#invoice').attr('disabled',false);
+                    $(this).text('Ok');
+                }
+
+            }
         });
 
         function checkActivation() {
@@ -105,8 +146,12 @@
                 $('#barcode').val('');
                 $('#barcode').on('input', function () {
                     var barCode = $(this).val();
-                    setTimeout(() => $(this).val(''), 150);
-                    getDataAndUpdateTable(barCode);
+                    var invoice = $('#invoice').val();
+                    if(invoice)
+                    {
+                        setTimeout(() => $(this).val(''), 150);
+                        getDataAndUpdateTable(barCode, invoice);
+                    }
                 });
                 $('.go').attr('disabled', true);
             }
@@ -115,9 +160,11 @@
                 $('.go').removeAttr('disabled');
             }
         }
-        function getDataAndUpdateTable(barCode) {
+
+        function getDataAndUpdateTable(barCode, invoice) {
             $.post('{{admin_url}}in', {
-                barCode
+                barCode,
+                invoice
             }, (res) => {
                 var { data } = res;
                 if (data) {
@@ -144,6 +191,27 @@
                             data.in
                         ]).draw(false);
                     }
+                }
+            });
+        }
+
+        function getDataForInvoiceAndUpdateTable(invoice){
+            $.post('{{admin_url}}in/invoice', {
+                invoice
+            }, (res) => {
+                var { data } = res;
+                console.log(res);
+                if (data) {
+                    data.forEach(data=>{
+                        $('#inTable').DataTable().row.add([
+                            data.barCode,
+                            data.brand.name,
+                            data.styleCode,
+                            data.mrp,
+                            data.size,
+                            data.in
+                        ]).draw(false);
+                    });
                 }
             });
         }

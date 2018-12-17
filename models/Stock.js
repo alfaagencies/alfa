@@ -6,6 +6,10 @@ var stockSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Product"
     },
+    invoice:{
+        type:Schema.Types.ObjectId,
+        ref:"Invoice"
+    },
     in:{
         type:Number,
         default:0

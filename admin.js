@@ -36,8 +36,9 @@ global.User = mongoose.model("User");
 global.Brand = mongoose.model("Brand");
 global.Product = mongoose.model("Product");
 global.Stock = mongoose.model('Stock');
+global.Invoice = mongoose.model('Invoice');
 
-global.models = [User,Brand,Product,Stock];
+global.models = [User,Brand,Product,Stock,Invoice];
 
 global.admin_url = process.env.ADMIN_URL;
 global.FX = require('./utils/functions.js');

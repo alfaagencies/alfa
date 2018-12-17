@@ -1444,19 +1444,40 @@ demo = {
             });
         } else if (type == 'input-field') {
             swal({
-                    title: 'Input something',
-                    html: '<p><input id="input-field" class="form-control">',
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    allowOutsideClick: false
-                },
-                function() {
-                    swal({
-                        html: 'You entered: <strong>' +
-                            $('#input-field').val() +
-                            '</strong>'
+                title: 'Input something',
+                html: '<p><input id="input-field" class="form-control">',
+                showCancelButton: true,
+                closeOnConfirm: false,
+                allowOutsideClick: false
+            },
+            function() {
+                swal({
+                    html: 'You entered: <strong>' +
+                        $('#input-field').val() +
+                        '</strong>'
+                });
+            })
+        }
+        else if(type == 'invoice') {
+            swal({
+                title: "Are you sure?",
+                text: "You want to complete the invoice",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn btn-info btn-fill",
+                confirmButtonText: "Yes, I Confirm",
+                cancelButtonClass: "btn btn-danger btn-fill",
+                closeOnConfirm: false,
+                //allowOutsideClick: false
+            }, function(isConfirm) {
+                if(isConfirm)
+                {
+                    $.get(path);
+                    swal({title:"Done!",text:"Your invoice has been completed.",type:"success",closeOnConfirm: false,confirmButtonText:'OK'},function(value){
+                        location.href=reload;
                     });
-                })
+                }
+            });
         }
     }
 
