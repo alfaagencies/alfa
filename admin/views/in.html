@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+{% import "macros/head.html" as head %}
+{{head.title('Alfa Agencies')}}
+
+<body>
+    <div class="wrapper">
+        {% include "partials/sidebar.html" %}
+        {% include "partials/navbar.html" %}
+        {% import "macros/forms.html" as form %}
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card data-tables">
+                            <div class="card-body table-striped table-no-bordered table-hover dataTable dtr-inline table-full-width">
+                                <div class="toolbar">
+                                    <div class="btn-group">
+                                        &nbsp;&nbsp;&nbsp;
+                                        <input type="text" id="barcode" class="form-control" autofocus />
+                                        &nbsp;&nbsp;&nbsp;
+                                        <button class="btn btn-icon btn-round btn-danger go">
+                                            Go
+                                        </button>
+                                    </div>
+                                    <br />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <input id="activate" type="checkbox">
+                                    <br />
+                                    <br />
+                                </div>
+                                <div class="fresh-datatables">
+                                    <table id="inTable" class="table table-striped table-no-bordered table-hover"
+                                        cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Brand Name</th>
+                                                <th>Style Name With Color</th>
+                                                <th>MRP</th>
+                                                <th>Size</th>
+                                                <th>Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th></th>
+                                                <th>Brand Name</th>
+                                                <th>Style Name With Color</th>
+                                                <th>MRP</th>
+                                                <th>Size</th>
+                                                <th>Qty</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    /*For inlcuding variables at the top*/
+    var message;
+</script>
+{% include "partials/core_js.html" %}
+{% import "macros/plugins.html" as plugins %}
+{{plugins.script('jquery.dataTables.min')}}
+{{plugins.script('light-bootstrap-dashboard')}}
+{{plugins.script('demo')}}
+{% include "partials/functions.html" %}
+<script>
+    $(document).ready(function () {
+
+        {% if error_flash %}
+        demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
+        {% endif %}
+
+        {% if messages.error %}
+        demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
+        {% endif %}
+
+        $('#inTable').DataTable({
+            "pagingType": "full_numbers",
+        }).column(0).visible(false);
+
+        checkActivation();
+
+        $('#activate').change(checkActivation);
+
+        $('.go').click(function(){
+            var barCode =  $('#barcode').val();
+            getDataAndUpdateTable(barCode);
+            $('#barcode').val('');
+        });
+
+        function checkActivation() {
+            if (!$('#activate').is(':checked')) {
+                $('#barcode').val('');
+                $('#barcode').on('input', function () {
+                    var barCode = $(this).val();
+                    setTimeout(() => $(this).val(''), 150);
+                    getDataAndUpdateTable(barCode);
+                });
+                $('.go').attr('disabled', true);
+            }
+            else {
+                $('#barcode').off('input');
+                $('.go').removeAttr('disabled');
+            }
+        }
+        function getDataAndUpdateTable(barCode) {
+            $.post('{{admin_url}}in', {
+                barCode
+            }, (res) => {
+                var { data } = res;
+                if (data) {
+                    var go = true;
+
+                    $('#inTable').DataTable().rows().every(function () {
+                        var row = this.data();
+                        if (row[0] === barCode) {
+                            go = false;
+                            row[row.length - 1] = data.in;
+                        }
+
+                        this.data(row);
+
+                    });
+
+                    if (go) {
+                        $('#inTable').DataTable().row.add([
+                            barCode,
+                            data.brand.name,
+                            data.styleCode,
+                            data.mrp,
+                            data.size,
+                            data.in
+                        ]).draw(false);
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+</html>

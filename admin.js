@@ -35,8 +35,9 @@ mongoose.set('debug', true);
 global.User = mongoose.model("User");
 global.Brand = mongoose.model("Brand");
 global.Product = mongoose.model("Product");
+global.Stock = mongoose.model('Stock');
 
-global.models = [User,Brand,Product];
+global.models = [User,Brand,Product,Stock];
 
 global.admin_url = process.env.ADMIN_URL;
 global.FX = require('./utils/functions.js');
