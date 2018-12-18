@@ -104,10 +104,50 @@ router.get('/in/complete', FX.adminAuth, function(req, res, next){
 
     Invoice.update({ invoice },{ $set:{ completed: true }},function(err,data){
         if(err) return next(err);
-        console.log("data after invoice update=====>",data);
+
         if(data)
         return res.json({
             message:'Activity Successfull'            
+        });
+    });
+});
+
+router.post('/in/update', FX.adminAuth, function(req, res, next){
+    var { barCode, invoice } = req.body;
+    Invoice.findOne({ invoice },function(err,invoice){
+        if(err)return next(err);
+
+        if(!invoice || ( invoice && invoice.completed && !req.session.user.isAdmin ))
+        {
+            return res.json({ message:'No Data Available'});
+        }
+
+        Product.findOne({barCode},(err,result)=>{
+            if(err)return next(err);
+            
+            if(!result)
+            {
+                return res.json({ message:'No Data Available'});
+            }
+    
+            Stock.findOneAndUpdate({ 
+                product: result._id,
+                invoice: invoice._id
+            },{ 
+                $set:{ 
+                    in: req.body.in 
+                }
+            },{
+                new: true
+            },function(err,data){
+                if(err)return next(err);
+                res.json({ 
+                    message:'Activity Successfull',
+                    data:{
+                        in: data.in,
+                    }
+                });
+            });
         });
     });
 });

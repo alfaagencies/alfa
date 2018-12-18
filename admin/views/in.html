@@ -74,6 +74,35 @@
             </div>
         </div>
     </div>
+    <!-- Edit Qty Modal -->
+    <div class="modal fade modal-primary" id="editQty" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h4>Edit Quantity</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="Validation" action="javascript:void(0)" onkeypress="return event.keyCode != 13;">
+
+                        {{form.hidden('invoice',body.invoice,'')}}
+                        {{form.hidden('barCode',body.barCode,'')}}
+
+                        {{form.input('Quantity','text','in',body.in,'',"number=true","required=true")}}
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-wd btn-danger submit">Update Quantity</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link btn-simple" data-dismiss="modal">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal -->
 </body>
 <script>
     /*For inlcuding variables at the top*/
@@ -104,6 +133,41 @@
         checkActivation();
 
         $('#activate').change(checkActivation);
+
+        $('#inTable').on( 'click', 'td:last-child', function (e) {
+            var row = $('#inTable').DataTable().rows().data()[$(this).closest("tr").index()];
+            $('#Validation [name="barCode"]').val(row[0]);
+            $('#Validation [name="invoice"]').val($('#invoice').val());
+            $('#Validation [name="in"]').val(row[row.length - 1].replace(/<[^>]*>/g, ""));
+        });
+ 
+        $('.submit').click(function(){
+            var formData = $('#Validation').serializeArray();
+            var obj = formData.reduce((obj,current)=>{
+                obj[current.name] = current.value;
+                return obj;
+            },{});
+            console.log();
+            $.post('{{admin_url}}in/update',obj,function(res){
+                var { data } = res;
+
+                if(data)
+                {
+                    $('#inTable').DataTable().rows().every(function () {
+                        var row = this.data();
+                        if (row[0] === obj.barCode) {
+                            go = false;
+                            row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.in}</a>`;
+                        }
+
+                        this.data(row);
+
+                    });
+                }
+            });
+
+            $('#editQty').modal('hide');
+        });
 
         $('.done').click(function(){
             var invoice = $('#invoice').val();
@@ -174,7 +238,7 @@
                         var row = this.data();
                         if (row[0] === barCode) {
                             go = false;
-                            row[row.length - 1] = data.in;
+                            row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.in}</a>`;
                         }
 
                         this.data(row);
@@ -188,7 +252,7 @@
                             data.styleCode,
                             data.mrp,
                             data.size,
-                            data.in
+                            `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.in}</a>`
                         ]).draw(false);
                     }
                 }
@@ -209,7 +273,7 @@
                             data.styleCode,
                             data.mrp,
                             data.size,
-                            data.in
+                            `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.in}</a>`                            
                         ]).draw(false);
                     });
                 }
