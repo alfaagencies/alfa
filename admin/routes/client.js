@@ -43,6 +43,26 @@ router.post('/clients/find',FX.adminAuth,(req,res,next)=>{
 	});
 });
 
+router.post('/users/check',FX.adminAuth,function(req,res,next){
+	var body=req.body;
+
+	User.count(body,(err, user)=> {
+		if(err)return next(err);
+		if(user)
+		{
+			return res.json({ 
+				error: true, 
+				message:"Client Already Exist"
+			});	
+		}
+
+		return res.json({ 
+			error: false, 
+			message:"Good to go!"
+		});	
+	});
+});
+
 router.post('/clients/add',FX.adminAuth,function(req,res,next){
     User.create(req.body,function(err,result){
         if(err)return next(err);

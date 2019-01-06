@@ -9,7 +9,11 @@ var productSchema = new Schema({
 	styleCode:String,
     mrp:Number,
     size:Number,
-    barCode:String,
+	barCode:String,
+	qty:{
+		type:Number,
+		default: 0
+	},
 	isArchive: {
 		type: Boolean,
 		default: false

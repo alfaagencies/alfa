@@ -68,7 +68,7 @@ router.post('/brands/find',FX.adminAuth,(req,res,next)=>{
 	var group  = {
 		$group: {
 			_id:"$brand",
-			qty:{ $sum :1}
+			qty:{ $sum :"$qty"}
 		}
 	};
 
@@ -121,11 +121,31 @@ router.post('/brands/find',FX.adminAuth,(req,res,next)=>{
 
 });
 
+router.post('/brands/check',FX.adminAuth,function(req,res,next){
+	var body=req.body;
+
+	Brand.count(body,(err, brand)=> {
+		if(err)return next(err);
+		if(brand)
+		{
+			return res.json({ 
+				error: true, 
+				message:"Brand Already Exist"
+			});	
+		}
+
+		return res.json({ 
+			error: false, 
+			message:"Good to go!"
+		});	
+	});
+});
+
 
 router.post('/brands/add',FX.adminAuth,function(req,res,next){
 	var body=req.body;
 
-	Brand.create(body,(err, user)=> {
+	Brand.create(body,(err, brand)=> {
 		if(err)return next(err);
 		return res.redirect('/admin/brands');	
 	});
@@ -191,7 +211,7 @@ router.post('/brands/styles/find',FX.adminAuth,(req,res,next)=>{
 		$group:{
 			_id:"$styleCode",
 			qty:{
-				$sum: 1
+				$sum: "$qty"
 			}
 		}	
 	};
@@ -236,7 +256,7 @@ router.get('/brands/styles/sizes',FX.adminAuth,(req,res,next)=>{
 		$group:{
 			_id:"$size",
 			qty:{
-				$sum: 1
+				$sum: "$qty"
 			}
 		}	
 	};

@@ -151,7 +151,9 @@
     <!--  End Modal -->
 </body>
 <script>
-    var brandId, styleId, isAdmin="{{user.isAdmin}}" === "true";
+    var brandId, styleId, 
+    addBrandCheck, editBrandCheck,
+    isAdmin="{{user.isAdmin}}" === "true";
 </script>
 {% include "partials/core_js.html" %}
 {% import "macros/plugins.html" as plugins %}
@@ -288,6 +290,35 @@
             });
         });
 
+        $("#addValidation [name='name']").focusout(function(){
+            brandCheck('#addValidation').then((val)=>{
+                addBrandCheck = val;
+            });
+        });
+        $("#addValidation").submit(function(e){
+            if(!addBrandCheck)
+            {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        $("#Validation [name='name']").focusout(function(){
+            brandCheck('#Validation').then((val)=>{
+                editBrandCheck = val;
+            });
+        });
+
+        $("#Validation").submit(function(e){
+            if(!editBrandCheck)
+            {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+       
+
         $(document).on('click', "#brandTable td:not('.actions')", function () {
             brandId = $(this).parent().children().eq(0).find('span').eq(1).html();
             $('#Validation').hide();
@@ -329,6 +360,34 @@
             $('#Validation [name="id"]').val($(this).parents('tr').children().eq(0).find('span').eq(1).html());
             $('#Validation [name="name"]').val($(this).parents('tr').children().eq(0).find('span').eq(0).html());
         });
+
+        function brandCheck(form)
+        {
+            return new Promise((resolve, reject)=>{
+                
+                let name = (val)=> val !== undefined ? $(`${form} [name='name']`).val(val) : 
+                $(`${form} [name='name']`).val();
+    
+                if(name())
+                {
+                    $.post('{{admin_url}}brands/check', 
+                    {
+                        name:name()
+                    },
+                     (data) => {
+                        if(data.error)
+                        {
+                            name('');
+                            demo.showNotification('top', 'right', data.message, 'danger', 'nc-icon');
+                            resolve(false);
+                        }
+    
+                        resolve(true);
+        
+                    });
+                }
+            });
+        }
     });
 </script>
 

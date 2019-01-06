@@ -109,7 +109,7 @@
     </div>
 </body>
 <script>
-    var clientId, addFile = [], addCouponFile = [], editFile = [], editCouponFile = [];
+    var clientId,addClientCheck,editClientCheck;
 </script>
 {% include "partials/core_js.html" %}
 {% import "macros/plugins.html" as plugins %}
@@ -185,6 +185,46 @@
             });
         });
 
+        $("#addValidation [name='name']").focusout(function(){
+            clientCheck('#addValidation').then(val=>{
+                addClientCheck = val;
+            });
+        });
+
+        $("#addValidation [name='city']").focusout(function(){
+            clientCheck('#addValidation').then(val=>{
+                addClientCheck = val;
+            });
+        });
+
+        $("#addValidation").submit(function(e){
+            if(!addClientCheck)
+            {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        $("#Validation [name='name']").focusout(function(){
+            clientCheck('#Validation').then(val=>{
+                editClientCheck = val;
+            });
+        });
+
+        $("#Validation [name='city']").focusout(function(){
+            clientCheck('#Validation').then(val=>{
+                editClientCheck = val;
+            });
+        });
+
+        $("#Validation").submit(function(e){
+            if(!editClientCheck)
+            {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
         $(document).on('click', "tbody > tr", function () {
             clientId = $(this).children().eq(0).find('span').eq(1).html();
             $('#Validation').hide();
@@ -216,6 +256,37 @@
             $('#Validation [name="name"]').val( $('.view > .row > p').eq(0).html());
             $('#Validation [name="city"]').val( $('.view > .row > p').eq(1).html());
         });
+
+        function clientCheck(form){
+            return new Promise((resolve, reject)=>{
+
+                let name = (val)=> val !== undefined ? $(`${form} [name='name']`).val(val) : 
+                $(`${form} [name='name']`).val();
+    
+                let city = (val)=> val !== undefined ? $(`${form} [name='city']`).val(val) : 
+                $(`${form} [name='city']`).val();
+    
+                if(name() && city())
+                {
+                    $.post('{{admin_url}}users/check', 
+                    {
+                        name: name(),
+                        city: city()
+                    },
+                        (data) => {
+                        if(data.error)
+                        { 
+                            name('');
+                            city('');                        
+                            demo.showNotification('top', 'right', data.message, 'danger', 'nc-icon');
+                            resolve(false);
+                        }
+                        resolve(true);
+        
+                    });
+                }
+            });
+        }
     });
 </script>
 

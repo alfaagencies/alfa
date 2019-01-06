@@ -55,10 +55,24 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 });
 
 router.post('/products/add',FX.adminAuth,function(req,res,next){
-    Product.create(req.body,function(err,result){
-        if(err)return next(err);
-		if(result) return res.redirect('/admin/products');
-    });
+	Product.findOne(req.body,(err,result)=>{
+		if(err)return next(err);
+		if(!result)
+		{
+			Product.create(req.body,function(err,result){
+				if(err)return next(err);
+				if(result) return res.redirect('/admin/products');
+			});
+		}
+		else{
+			req.flash('error','Product Already Exist');
+			// res.locals.messages=req.flash();
+			Brand.find({ isArchive: false },'_id name',(err,brand)=>{
+				if(err) return next(err);
+				res.render('product.html',{ brand });
+			});
+		}
+	});
 });
 
 router.post('/products/edit',FX.adminAuth,function(req,res,next){
@@ -75,6 +89,4 @@ router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
 		if(result) return res.status(200).json({message:`product deleted`});
 	});
 });
-
-
 module.exports = router;
