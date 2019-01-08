@@ -155,6 +155,7 @@
         });
  
         $('.submit').click(function(){
+            $('#Validation [name="invoice"]').val($('#invoiceId').val());
             var formData = $('#Validation').serializeArray();
             var obj = formData.reduce((obj,current)=>{
                 obj[current.name] = current.value;
@@ -223,6 +224,7 @@
         function checkActivation() {
             if (!$('#activate').is(':checked')) {
                 $('#barcode').val('');
+
                 $('#barcode').on('input', function () {
                     var barCode = $(this).val();
                     var invoice = $('#invoiceId').val();
@@ -281,9 +283,9 @@
             }, (res) => {
                 var { data } = res;
                 if (!res.error) {
+                    $('#invoiceId').val(res.invoiceId);
                     data.forEach(data=>{
                         var go = true;
-                        $('#invoiceId').val(res.invoiceId);
                         $('#outTable').DataTable().rows().every(function () {
                             var row = this.data();
                             if (row[2] === data.styleCode) {
