@@ -23,7 +23,7 @@
                                                 <option value="{{client.name}}, {{client.city}}">{{client.name}}, {{client.city}}</option>
                                                 {% endfor %}
                                             </select>
-                                            <input type="text" id="qty" class="form-control" value="0" hidden />
+                                            <input type="text" id="invoiceId" class="form-control" hidden />
                                         </div>
                                         <div class="col-sm-1">
                                             <button class="btn btn-icon btn-round btn-danger ok">Ok</button>
@@ -165,7 +165,6 @@
 
                 if(!res.error)
                 {
-                    $('#qty').val(data.qty);
                     $('#outTable').DataTable().rows().every(function () {
                         var row = this.data();
                         if (row[2] === data.styleCode) {
@@ -186,18 +185,17 @@
         });
 
         $('.done').click(function(){
-            var invoice = $('#invoice').val();
+            var invoice = $('#invoiceId').val();
             if(invoice)
             demo.showSwal('invoice',`{{admin_url}}out/complete?invoice=${invoice}`,'data','{{admin_url}}out');
         });
 
         $('.go').click(function(){
             var barCode =  $('#barcode').val();
-            var invoice = $('#invoice').val();
-            var qty = $('#qty').val();
+            var invoice = $('#invoiceId').val();
             if(invoice)
             {
-                getDataAndUpdateTable(barCode, invoice, qty);
+                getDataAndUpdateTable(barCode, invoice);
                 $('#barcode').val('');
             }
         });
@@ -227,12 +225,11 @@
                 $('#barcode').val('');
                 $('#barcode').on('input', function () {
                     var barCode = $(this).val();
-                    var invoice = $('#invoice').val();
-                    var qty = $('#qty').val();
+                    var invoice = $('#invoiceId').val();
                     if(invoice)
                     {
                         setTimeout(() => $(this).val(''), 150);
-                        getDataAndUpdateTable(barCode, invoice, qty);
+                        getDataAndUpdateTable(barCode, invoice);
                     }
                 });
                 $('.go').attr('disabled', true);
@@ -243,17 +240,15 @@
             }
         }
 
-        function getDataAndUpdateTable(barCode, invoice, qty) {
+        function getDataAndUpdateTable(barCode, invoice) {
             $.post('{{admin_url}}out', {
                 barCode,
-                invoice,
-                qty
+                invoice
             }, (res) => {
                 var { data } = res;
                 if (!res.error) {
                     var go = true;
-                    
-                    $('#qty').val(data.qty);                    
+                                    
                     $('#outTable').DataTable().rows().every(function () {
                         var row = this.data();
                         if (row[2] === data.styleCode) {
@@ -287,38 +282,28 @@
                 var { data } = res;
                 if (!res.error) {
                     data.forEach(data=>{
-
                         var go = true;
-                    
-                        $('#qty').val(data.qty);                    
+                        $('#invoiceId').val(res.invoiceId);
                         $('#outTable').DataTable().rows().every(function () {
                             var row = this.data();
                             if (row[2] === data.styleCode) {
                                 go = false;
                                 row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
                             }
-
+    
                             this.data(row);
-
+    
                         });
-
+    
                         if (go) {
                             $('#outTable').DataTable().row.add([
-                                barCode,
+                                data.barCode,
                                 data.brand.name,
                                 data.styleCode,
                                 data.mrp,
                                 `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`
                             ]).draw(false);
                         }
-                        
-                        // $('#outTable').DataTable().row.add([
-                        //     data.barCode,
-                        //     data.brand.name,
-                        //     data.styleCode,
-                        //     data.mrp,
-                        //     `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`                            
-                        // ]).draw(false);
                     });
                 }else{
                     demo.showNotification('top', 'center', res.message, 'danger', 'nc-icon');

@@ -13,8 +13,8 @@ router.get('/out',FX.adminAuth, (req, res, next)=>{
 });
 
 router.post('/out',FX.adminAuth,function(req,res,next){
-    var { barCode, invoice, qty } = req.body;
-    Invoice.findOne({invoice},function(err,invoice){
+    var { barCode, invoice } = req.body;
+    Invoice.findById(invoice,function(err,invoice){
         if(err)return next(err);
 
         if(!invoice || ( invoice && invoice.completed && !req.session.user.isAdmin ))
@@ -33,38 +33,46 @@ router.post('/out',FX.adminAuth,function(req,res,next){
                 return res.json({ message:'No Data Available'});
             }
 
-            if((result.qty - qty*1) > 0)
-            {
-
-                Stock.findOneAndUpdate({ 
-                    product: result._id,
-                    invoice: invoice._id,
-                    type:'out',
-                    created: new Date(new Date().toISOString().substring(0,10))
-                },{ 
-                    $inc:{qty:1}
-                },{
-                    upsert: true, 
-                    new: true
-                },function(err,data){
-                    if(err)return next(err);
-                    res.json({ 
-                        error:false,
-                        message:'Activity Successfull',
-                        data:{
-                            ...result,
-                            qty: data.qty,
-                        }
+            Stock.findOne({ 
+                product: result._id,
+                invoice: invoice._id,
+                type:'out',
+                created: new Date(new Date().toISOString().substring(0,10))
+            },(err, data)=>{
+                if(err)return next(err);
+                
+                if((result.qty - data.qty) > 0)
+                {
+                    Stock.updateOne({ 
+                        product: result._id,
+                        invoice: invoice._id,
+                        type:'out',
+                        created: new Date(new Date().toISOString().substring(0,10))
+                    },{ 
+                        $inc:{qty:1}
+                    },{
+                        upsert: true,
+                        new: true
+                    },function(err,stock){
+                        if(err)return next(err);
+                        res.json({ 
+                            error:false,
+                            message:'Activity Successfull',
+                            data:{
+                                ...result,
+                                qty: data.qty + 1,
+                            }
+                        });
                     });
-                });
-            }
-            else{
-                res.json({ 
-                    error:true,
-                    message:'Action Aborted: Product not in stock',
-                    data:{}
-                });
-            }
+                }
+                else{
+                    res.json({ 
+                        error:true,
+                        message:'Action Aborted: Product not in stock',
+                        data:{}
+                    });
+                }
+            });
         });
     });
 });
@@ -79,6 +87,7 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
         {
             Invoice.findOne({
                 invoice,
+                created:{ $gte: new Date(new Date().toISOString().substring(0,10)) },
                 completed:false
             },function(err,inVoice){
                 if(err) return next(err);
@@ -120,7 +129,7 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
                         res.json({ 
                             error: false,
                             message:'Activity Successfull',
-                            invoice: invoice._id,
+                            invoiceId: invoice._id,
                             data:data.map(data=>({
                                 ...data.product,
                                 qty: data.qty
@@ -144,7 +153,7 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
 router.get('/out/complete', FX.adminAuth, function(req, res, next){
     var { invoice } = req.query;
 
-    Invoice.findOneAndUpdate({invoice},{ $set:{ completed: true }},function(err,data){
+    Invoice.findByIdAndUpdate(invoice,{ $set:{ completed: true }},function(err,data){
         if(err) return next(err);
 
         if(data)
@@ -176,7 +185,7 @@ router.get('/out/complete', FX.adminAuth, function(req, res, next){
 
 router.post('/out/update', FX.adminAuth, function(req, res, next){
     var { barCode, invoice } = req.body;
-    Invoice.findOne({ invoice },function(err,invoice){
+    Invoice.findById(invoice, function(err,invoice){
         if(err)return next(err);
 
         if(!invoice || ( invoice && invoice.completed && !req.session.user.isAdmin ))
