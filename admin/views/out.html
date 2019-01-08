@@ -287,13 +287,38 @@
                 var { data } = res;
                 if (!res.error) {
                     data.forEach(data=>{
-                        $('#outTable').DataTable().row.add([
-                            data.barCode,
-                            data.brand.name,
-                            data.styleCode,
-                            data.mrp,
-                            `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`                            
-                        ]).draw(false);
+
+                        var go = true;
+                    
+                        $('#qty').val(data.qty);                    
+                        $('#outTable').DataTable().rows().every(function () {
+                            var row = this.data();
+                            if (row[2] === data.styleCode) {
+                                go = false;
+                                row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
+                            }
+
+                            this.data(row);
+
+                        });
+
+                        if (go) {
+                            $('#outTable').DataTable().row.add([
+                                barCode,
+                                data.brand.name,
+                                data.styleCode,
+                                data.mrp,
+                                `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`
+                            ]).draw(false);
+                        }
+                        
+                        // $('#outTable').DataTable().row.add([
+                        //     data.barCode,
+                        //     data.brand.name,
+                        //     data.styleCode,
+                        //     data.mrp,
+                        //     `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`                            
+                        // ]).draw(false);
                     });
                 }else{
                     demo.showNotification('top', 'center', res.message, 'danger', 'nc-icon');
