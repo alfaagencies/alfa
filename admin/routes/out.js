@@ -41,7 +41,7 @@ router.post('/out',FX.adminAuth,function(req,res,next){
             },(err, data)=>{
                 if(err)return next(err);
                 
-                if((result.qty - data.qty) > 0)
+                if((result.qty - (data.qty || 0)) > 0)
                 {
                     Stock.updateOne({ 
                         product: result._id,
@@ -60,7 +60,7 @@ router.post('/out',FX.adminAuth,function(req,res,next){
                             message:'Activity Successfull',
                             data:{
                                 ...result,
-                                qty: data.qty + 1,
+                                qty: (data.qty || 0) + 1,
                             }
                         });
                     });
