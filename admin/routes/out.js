@@ -41,7 +41,7 @@ router.post('/out',FX.adminAuth,function(req,res,next){
             },(err, data)=>{
                 if(err)return next(err);
                 
-                if((result.qty - (data && data.qty || 0)) > 0)
+                if((result.qty - (data && data.qty || 0)) >= 0)
                 {
                     Stock.updateOne({ 
                         product: result._id,
@@ -201,7 +201,7 @@ router.post('/out/update', FX.adminAuth, function(req, res, next){
                 return res.json({ message:'No Data Available'});
             }
 
-            if((result.qty - req.body.out*1) > 0)
+            if((result.qty - req.body.out*1) >= 0)
             {
                 Stock.findOneAndUpdate({ 
                     product: result._id,
