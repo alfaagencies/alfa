@@ -66,17 +66,22 @@
             </div>
         </div>
     </div>
-    <!-- View User Modal -->
+    <!-- View Invoice Modal -->
     <div class="modal fade modal-primary" id="showInvoiceDetails" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
-                    <h4>Invoice Details</h4>
+                    <h4>Invoice Details</h4> 
                 </div>
                 <div class="modal-body">
+                    <br/> 
+                    {% if user.isAdmin %}
+                    <button type="button" class="btn btn-wd btn-danger" id='show'>View Mode</button>
+                    {% endif %}
                     <table id="invoiceTable" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Brand Name</th>
                                 <th>Style Name With Color</th>
                                 <th>MRP</th>
@@ -88,6 +93,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                                <th></th>
                                 <th>Brand Name</th>
                                 <th>Style Name With Color</th>
                                 <th>MRP</th>
@@ -104,9 +110,40 @@
         </div>
     </div>
     <!--  End Modal -->
+    <!-- Edit Qty Modal -->
+    <div class="modal fade modal-primary" id="editQty" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h4>Edit Quantity</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="Validation" action="javascript:void(0)" onkeypress="return event.keyCode != 13;">
+
+                        {{form.hidden('invoice',body.invoice,'')}}
+                        {{form.hidden('barCode',body.barCode,'')}}
+                        {{form.hidden('type',body.type,'')}}
+
+                        {{form.input('Quantity','text','qty',body.qty,'',"number=true","required=true")}}
+
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-wd btn-danger submit">Update Quantity</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link btn-simple" data-dismiss="modal">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal -->
 </body>
 <script>
     /*For inlcuding variables at the top*/
+    var isAdmin="{{user.isAdmin}}" === "true";
     var message;
 </script>
 {% include "partials/core_js.html" %}
@@ -134,12 +171,44 @@
         $('#historyTable').DataTable({
         }).column(0).visible(false);
 
-        $('#historyTable').on( 'click', 'td:eq(1)', function (e) {
+        $('#invoiceTable').DataTable({
+        }).column(0).visible(false);
+
+        $('#show').click(function(){
+            $(this).text($(this).text() === "Edit Mode" ? "View Mode" : "Edit Mode");
+            var table = $('#invoiceTable').DataTable();
+
+            table.column(4).visible(!table.column(4).visible());
+
+            table.clear().draw();
+            getDataAndUpdateInvoiceTable($("#Validation [name='invoice']").val());
+        });
+
+        $('#historyTable').on( 'click', 'td:nth-child(2)', function (e) {
             var row = $('#historyTable').DataTable().rows().data()[$(this).closest("tr").index()];
-            $('#invoiceTable').DataTable().clear().draw();
+            var invoiceTable = $('#invoiceTable').DataTable();
+            invoiceTable.column(4).visible($('#type').val() === "in" ? true : isAdmin);
+            invoiceTable.clear().draw();
             getDataAndUpdateInvoiceTable(row[0]);
+            $("#Validation [name='invoice']").val(row[0]);
         });
  
+        $('#invoiceTable').on( 'click', 'td:nth-child(5)', function (e) {
+            var row = $('#invoiceTable').DataTable().rows().data()[$(this).closest("tr").index()];
+            $("#Validation [name='barCode']").val(row[0]);
+            $("#Validation [name='type']").val($('#type').val());
+            $("#Validation [name='qty']").val(row[row.length - 1].replace(/<[^>]*>/g, ""));
+        });
+
+        $('.submit').click(function(){
+            var formData = $('#Validation').serializeArray();
+            var obj = formData.reduce((obj,current)=>{
+                obj[current.name] = current.value;
+                return obj;
+            },{});
+            editProductQuantity(obj);
+            $('#editQty').modal('hide');
+        });
 
         
         $('.go').click(function(){
@@ -153,6 +222,31 @@
                 getDataAndUpdateHistoryTable(from, to, type);
             }
         });
+
+        function editProductQuantity(obj) {
+            console.log("inside editProductQuantity");
+            $.post('{{admin_url}}history/invoice/update',obj,function(res){
+                var { data } = res;
+
+                if(!res.error)
+                {
+                    var table = $('#invoiceTable').DataTable();
+                    table.rows().every(function () {
+                        var row = this.data();
+                        if (row[0] === obj.barCode) {
+                            go = false;
+                            row[row.length - 1] = isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${obj.qty}</a>`:obj.qty;
+                        }
+
+                        this.data(row);
+
+                    });
+                }
+                else{
+                    demo.showNotification('top', 'center', res.message, 'danger', 'nc-icon');
+                }
+            });
+        }
 
         function getDataAndUpdateHistoryTable(from, to, type) {
             $.post('{{admin_url}}history', {
@@ -178,13 +272,33 @@
             }, (res) => {
                 var { data } = res;
                 data.forEach(data=>{
-                    $('#invoiceTable').DataTable().row.add([
+                    var table = $('#invoiceTable').DataTable();
+                    var go = true;
+
+                    if($('#type').val() === "out" && !table.column(4).visible()) {
+
+                        table.rows().every(function () {
+                            var row = this.data();
+                            if (row[2] === data.product.styleCode) {
+                                go = false;
+                                row[row.length - 1] += data.qty;
+                            }
+    
+                            this.data(row);
+    
+                        });
+                    }
+
+                    if(go) {
+                        table.row.add([
+                            data.product.barCode,
                             data.product.brand.name,
                             data.product.styleCode,
                             data.product.mrp,
                             data.product.size,
-                            data.qty
-                    ]).draw(false);
+                            isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>` : data.qty
+                        ]).draw(false);
+                    }
                 });
             });
         }

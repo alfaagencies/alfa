@@ -8,7 +8,7 @@ router.post('/in',FX.adminAuth,function(req,res,next){
     Invoice.findOne({ invoice },function(err,invoice){
         if(err)return next(err);
 
-        if(!invoice || ( invoice && invoice.completed && !req.session.user.isAdmin ))
+        if(!invoice || ( invoice && invoice.completed ))
         {
             return res.json({ message:'No Data Available'});
         }
@@ -57,7 +57,7 @@ router.post('/in/invoice', FX.adminAuth, function(req,res,next){
 
         new Promise((resolve, reject)=>{
             
-            if( inVoice && inVoice.completed && !req.session.user.isAdmin )
+            if( inVoice && inVoice.completed )
             {
                 return res.json({ message:'No Data Available'});
             }
@@ -144,7 +144,7 @@ router.post('/in/update', FX.adminAuth, function(req, res, next){
     Invoice.findOne({ invoice },function(err,invoice){
         if(err)return next(err);
 
-        if(!invoice || ( invoice && invoice.completed && !req.session.user.isAdmin ))
+        if(!invoice || ( invoice && invoice.completed ))
         {
             return res.json({ message:'No Data Available'});
         }
