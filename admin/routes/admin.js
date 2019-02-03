@@ -4,25 +4,36 @@ var router = express.Router();
 
 router.all('/',FX.adminAuth, (req, res, next)=>{
 	var data = {};
-	let lastMonth = new Date(new Date(new Date().setDate(1)).toISOString().substring(0,10));
+	let lastMonth = new Date(new Date().setDate(1));
 	Promise.all([
-		// User.count({isAdmin:false,isBusiness:false,isArchive:false}),
-		// User.count({isAdmin:false,isBusiness:true,isArchive:false}),
-		// User.count({isAdmin:false,isBusiness:false,isArchive:false,created:{$gte:lastMonth}}),
-		// User.count({isAdmin:false,isBusiness:true,isArchive:false,created:{$gte:lastMonth}}),
-		// Event.count({isArchive:false}),
-		// Event.count({isArchive:false,created:{$gte:lastMonth}}),
-		// Event.count({isArchive:false,status:true,approved:true})
+		Stock.aggregate([
+			{
+				$match:{
+					created: {$gte: lastMonth }, type:"in"
+				}
+			},
+			{
+				$group:{_id:null, count:{$sum:"$qty"}}
+			}
+		]),
+		Stock.aggregate([
+			{
+				$match:{
+					created: {$gte: lastMonth }, type:"out"
+				}
+			},
+			{
+				$group:{_id:null, count:{$sum:"$qty"}}
+			}
+		]),
+		Product.aggregate([{$group:{_id:null, count:{$sum:"$qty"}}}])
 	])
 	.then(done=>{
-		// data.userCount = done[0];
-		// data.businessUserCount = done[1];
-		// data.lastMonthUserCount = done[2];
-		// data.lastMonthBusinessUserCount = done[3];
-		// data.eventCount = done[4];
-		// data.lastMonthEventCount = done[5];
-		// data.activeEventCount = done[6];
-		return res.render('dashboard.html', {data:data});	
+		data.inCount = (done[0][0] && done[0][0].count) || 0;
+		data.outCount = (done[1][0] && done[1][0].count) || 0;
+		data.stockCount = (done[2][0] && done[2][0].count) || 0;
+console.log(data, done);
+		return res.render('dashboard.html', { data });	
 	})
 	.catch(err=>{
 		next(err)
