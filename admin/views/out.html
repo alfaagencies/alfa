@@ -170,7 +170,7 @@
                 {
                     $('#outTable').DataTable().rows().every(function () {
                         var row = this.data();
-                        if (row[2] === data.styleCode) {
+                        if (row[0] === obj.barCode) {
                             go = false;
                             row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
                         }
