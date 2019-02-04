@@ -1,5 +1,53 @@
 var express = require('express');
 var router = express.Router();
+var csv = require('csv');
+
+router.get('/products/csv', FX.adminAuth, (req, res, next) => {
+	Product.aggregate([
+		{
+			$match:{
+				isArchive: false
+			}
+		},
+		{
+			$lookup: {
+				from: 'brands',
+				localField: 'brand',
+				foreignField: '_id',
+				as: 'brand'
+			}
+		},
+		{
+			$unwind: '$brand'
+		},
+		{
+			$sort:{ styleCode:1, size:1 }
+		}
+	], (err, result) => {
+		if (err) return next(err);
+		let columns = [
+			{ key: "brand", header: "Brand" },
+			{ key: "styleCode", header: "Style With Color" },
+			{ key: "barCode", header: "Bar Code" },
+			{ key: "size", header: "Size" },
+			{ key: "mrp", header: "MRP" }
+		];
+
+		csv.stringify(
+			result.map(element => {
+				var obj = {};
+				obj.brand = element.brand.name;
+				obj.styleCode = element.styleCode;
+				obj.mrp = element.mrp;
+				obj.barCode = element.barCode;
+				obj.size = element.size;
+				return obj;
+			}),
+			{ header: true, columns: columns }, (err, output) => {
+				res.json(output);
+			});
+	});
+});
 
 router.get('/products',FX.adminAuth, (req, res, next)=>{
     Brand.find({ isArchive: false },'_id name',(err,brand)=>{

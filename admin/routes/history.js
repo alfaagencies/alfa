@@ -1,5 +1,86 @@
 var express = require('express');
 var router = express.Router();
+var csv = require('csv');
+
+router.get('/history/csv', FX.adminAuth, (req, res, next) => {
+    var { invoice, type } = req.query;
+    var aggregate = [
+        {
+            $match:{
+                invoice: ObjectId(invoice)
+            }
+        },
+        {
+            $lookup:{
+                from:'products',
+                localField:'product',
+                foreignField:'_id',
+                as:'product'
+            }
+        },
+        {
+            $unwind:'$product'
+        },
+        {
+            $lookup:{
+                from:'brands',
+                localField:'product.brand',
+                foreignField:'_id',
+                as:'product.brand'
+            }
+        },
+        {
+            $unwind:'$product.brand'
+        }
+    ];
+
+    if(type === "out") {
+        aggregate.push( {
+            $group:{
+            _id:'$product.styleCode',
+                product:{$first:'$product'},
+                qty:{$sum:'$qty'}
+            }
+        });
+    }
+
+    aggregate.push({
+        $sort:{ 'product.styleCode':1}
+    });
+    
+	Stock.aggregate(aggregate, (err, result) => {
+		if (err) return next(err);
+		let columns = [
+			{ key: "brand", header: "Brand" },
+			{ key: "styleCode", header: "Style With Color" }
+        ];
+        
+        if(type !== "out") {
+            columns.push({ key: "size", header: "Size" });
+        }
+
+        columns.push(
+			{ key: "mrp", header: "MRP" },
+            { key: "qty", header: "Qty" }
+        );
+        
+		csv.stringify(
+            result.map(element => {
+                var obj = {};
+                obj.brand = element.product.brand.name;
+                obj.styleCode = element.product.styleCode;
+                obj.mrp = element.product.mrp;
+                obj.qty = element.qty;
+                if(type !== "out") {
+                    obj.size = element.product.size;
+                }
+                return obj;
+            }),
+        { header: true, columns: columns }, (err, output) => {
+            res.json(output);
+        });
+	});
+});
 
 router.get('/history',FX.adminAuth, (req, res, next)=>res.render('history.html'));
 

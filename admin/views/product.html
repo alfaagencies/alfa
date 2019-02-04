@@ -20,9 +20,9 @@
                                         <button class="btn btn-icon btn-danger add" data-toggle="modal" data-target="#addProduct">
                                             <i class="fa fa-plus"></i> Add Product
                                         </button>
-                                        <!-- <button class="btn btn-icon btn-primary csv">
+                                        <button class="btn btn-icon btn-danger csv">
                                          CSV
-                                        </button>  -->
+                                        </button> 
                                     </div>
                                     <br /><br />
                                 </div>
@@ -260,8 +260,8 @@
         }).column(0).visible(false);
 
         $('.csv').click(() => {
-            var fileName = 'ClickApp' + '_' + 'Business_Users' + '_' + new Date().toLocaleString() + '.csv';
-            $.get('{{admin_url}}users/csv', function (data) {
+            var fileName = 'Alfa Agencies' + '_' + 'Products' + '_' + new Date().toLocaleString() + '.csv';
+            $.get('{{admin_url}}products/csv', function (data) {
                 $.fn.dataTable.fileSave(
                     new Blob([data]),
                     fileName

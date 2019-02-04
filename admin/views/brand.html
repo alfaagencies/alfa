@@ -19,9 +19,9 @@
                                         <button class="btn btn-icon btn-danger add">
                                             <i class="fa fa-plus"></i> Add Brand
                                         </button>
-                                        <!-- <button class="btn btn-icon btn-danger csv">
+                                        <button class="btn btn-icon btn-danger csv">
                                             CSV
-                                        </button> -->
+                                        </button>
                                     </div>
                                     <br /><br />
                                     <h4 class="text-center">Click On A Row To View Details</h4>
@@ -280,13 +280,12 @@
         }).column(0).visible(false);
 
         $('.csv').click(() => {
-            // var fileName = 'ClickApp' + '_' + 'Events' + '_' + new Date().toLocaleString() + '.csv';
+            var fileName = 'Alfa Agencies' + '_' + 'Brands' + '_' + new Date().toLocaleString() + '.csv';
             $.get('{{admin_url}}brands/csv', function (data) {
-               console.log("data returned from csv=====>",data);
-                // $.fn.dataTable.fileSave(
-                //     new Blob([data]),
-                //     fileName
-                // );
+                $.fn.dataTable.fileSave(
+                    new Blob([data]),
+                    fileName
+                );
             });
         });
 

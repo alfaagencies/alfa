@@ -74,4 +74,8 @@ router.post('/changePassword',FX.adminAuth,FX.validate(vrules.change_password,'c
 	});
 });
 
+router.post('/cv_upload', FX.adminAuth, (req, res, next)=>{
+	
+});
+
 module.exports = router;

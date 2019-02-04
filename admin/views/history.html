@@ -78,6 +78,8 @@
                     {% if user.isAdmin %}
                     <button type="button" class="btn btn-wd btn-danger" id='show'>View Mode</button>
                     {% endif %}
+                    <br/>
+                    <button class="btn btn-icon btn-danger csv">CSV</button>
                     <table id="invoiceTable" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -153,6 +155,7 @@
 {{plugins.script('bootstrap-datetimepicker')}}
 {{plugins.script('sweetalert2.min')}}
 {{plugins.script('jquery.dataTables.min')}}
+{{plugins.script('buttons.html5.min')}}
 {{plugins.script('light-bootstrap-dashboard')}}
 {{plugins.script('bootstrap-selectpicker')}}
 {{plugins.script('demo')}}
@@ -173,6 +176,17 @@
 
         $('#invoiceTable').DataTable({
         }).column(0).visible(false);
+
+        $('.csv').click(() => {
+            var fileName = 'Alfa Agencies' + '_' + $('#type').val().toUpperCase() + '_' + new Date().toLocaleString() + '.csv';
+            $.get(`{{admin_url}}history/csv?type=${$('#type').val()}&invoice=${$("#Validation [name='invoice']").val()}`, 
+            function (data) {
+                $.fn.dataTable.fileSave(
+                    new Blob([data]),
+                    fileName
+                );
+            });
+        });
 
         $('#show').click(function(){
             $(this).text($(this).text() === "Edit Mode" ? "View Mode" : "Edit Mode");
