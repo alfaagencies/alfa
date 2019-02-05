@@ -22,7 +22,10 @@
                                         </button>
                                         <button class="btn btn-icon btn-danger csv">
                                          CSV
-                                        </button> 
+                                        </button>
+                                        <button class="btn btn-icon btn-danger import" data-toggle="modal" data-target="#import">
+                                            Import
+                                        </button>  
                                     </div>
                                     <br /><br />
                                 </div>
@@ -158,6 +161,31 @@
         </div>
     </div>
     <!--  End Modal -->
+    <!-- Import Products Modal -->
+    <div class="modal fade modal-primary" id="import" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h4>Import Products</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <form method="POST" action="javascript:void(0)" id="addValidation" onkeypress="return event.keyCode != 13;">
+                        <div class="form-group">
+                            <div class="dropzone"  id="addFileUpload">
+                                <div class="fallback">
+                                    <input type="file" name="file"/>
+                                </div>
+                            </div> 
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link btn-simple" data-dismiss="modal">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal -->
 </body>
 <script>
     /*For inlcuding variables at the top*/
@@ -170,12 +198,60 @@
 {{plugins.script('jquery.validate.min')}}
 {{plugins.script('jquery.dataTables.min')}}
 {{plugins.script('buttons.html5.min')}}
+{{plugins.script('dropzone')}}
 {{plugins.script('light-bootstrap-dashboard')}}
 {{plugins.script('bootstrap-selectpicker')}}
 {{plugins.script('demo')}}
 {% include "partials/validation.html" %}
 {% include "partials/functions.html" %}
 <script>
+    Dropzone.autoDiscover = false;
+
+    $('#addFileUpload').dropzone({
+        url:'{{admin_url}}products/import',
+        method:'POST',
+        acceptedFiles:'.csv',
+        paramName: "files",
+        maxFilesize: 5,
+        addRemoveLinks: true,
+        uploadMultiple: false,
+        maxFiles:1,
+        //parallelUploads:1,
+        autoProcessQueue: true,
+        //autoQueue: true,
+        dictDefaultMessage: "Drop files here or click to upload.",
+        init: function() {
+            var fileUpload=this;
+            var message;
+            this.on("complete", function(file) {
+                console.log("file",file);
+                $(".dz-remove").html("<div><span class='fa fa-trash text-info' style='font-size: 1.5em'></span></div>");
+                $('.dz-success-mark').hide();
+                location.href = '{{admin_url}}products';
+            });
+
+            this.on("success",function(file){
+                console.log("file completed",file);
+            });
+
+            this.on("removedfile", function(file) {
+                console.log("file removed",file);
+
+                fileUpload.setupEventListeners();
+            });
+
+            this.on("addedfile",function(file){
+                console.log("file",file);
+                $(".dz-remove").html("<div><span class='fa fa-trash text-info' style='font-size: 1.5em'></span></div>");
+                $(".dz-preview").addClass('dz-complete');
+            });
+
+            this.on('maxfilesreached', ()=> {
+                this.removeEventListeners();
+            });
+        }
+    });
+
     $(document).ready(function () {
 
         {% if error_flash %}

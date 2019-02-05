@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
+var parse = require('csv-parse');
+var { Readable } = require('stream');
 
 router.get('/clients',FX.adminAuth, (req, res, next)=>res.render('client.html'));
 
@@ -87,5 +90,63 @@ router.get('/clients/delete/:id',FX.adminAuth,function(req,res,next){
 	});
 });
 
+router.post('/clients/import', FX.adminAuth, function(req,res,next){
+	var readable = new Readable();
+	readable.push(req.files.files.data);
+	readable.push(null);
+	var headers = {
+		Name: 'name',
+		City: 'city'
+	};
+
+	var count = 0;
+	var  firstRow, error=[], csvData = [] ;
+
+    readable.pipe(parse({delimiter: ','}))
+    .on('data', function(csvrow) {
+		
+		if(count === 0) {
+			firstRow = csvrow;
+		} else {
+			var user = {}; 
+			for(var i = 0; i< csvrow.length; i++) {
+				user[headers[firstRow[i]]] = csvrow[i];
+			}
+
+			csvData.push(user);
+		}
+		count++;       
+    })
+    .on('end', async function() {
+
+		try {
+			for(const [count,user] of csvData.entries()) {
+	
+				var result = await User.findOne(user);
+				
+				if(!result) {
+					await User.create(user);
+				} else {
+					error.push(count+2);
+				}
+			}
+		} catch(e) {
+			next(e);
+		}
+
+		res.status(200).json({message:`import completed`});
+
+	 	 if(error.length) {
+		  	console.log('error',error, error.join('\n'));
+			var destination = path.join(__dirname,'../../errors','Clients'+'_'+ req.files.files.name + '_' + new Date().toISOString() + '.txt');
+			var data = `Unable to add the following client entries on line:\n${error.join('\n')}`;
+			fs.appendFile(destination,data,'utf8',(err, done)=>{
+				if(err) return next(err);
+
+			});
+	  	}
+
+    });
+});
 
 module.exports = router;

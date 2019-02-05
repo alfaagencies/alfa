@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var csv = require('csv');
+var fs = require('fs');
+var parse = require('csv-parse');
+var { Readable } = require('stream');
 
 router.get('/products/csv', FX.adminAuth, (req, res, next) => {
 	Product.aggregate([
@@ -137,4 +140,76 @@ router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
 		if(result) return res.status(200).json({message:`product deleted`});
 	});
 });
+
+router.post('/products/import', FX.adminAuth, function(req,res,next){
+	console.log("inside products=========>",req.files);
+	var readable = new Readable();
+	readable.push(req.files.files.data);
+	readable.push(null);
+	var headers = {
+		"Brand": 'brand',
+		"Style With Color": 'styleCode',
+		"Bar Code": 'barCode',
+		"Size": 'size',
+		"MRP": 'mrp'
+	};
+
+	var count = 0;
+	var  firstRow, error=[], csvData = [] ;
+
+    readable.pipe(parse({delimiter: ','}))
+    .on('data', function(csvrow) {
+		console.log("csvrow===========>",csvrow);
+		if(count === 0) {
+			firstRow = csvrow;
+		} else {
+			var product = {}; 
+			for(var i = 0; i< csvrow.length; i++) {
+				product[headers[firstRow[i]]] = csvrow[i];
+			}
+			console.log("product======>",product);
+			csvData.push(product);
+		}
+		count++;       
+    })
+    .on('end', async function() {
+
+		try {
+			for(var [count,product] of csvData.entries()) {
+	
+				var brand = await Brand.findOne({ name: product.brand });
+
+				if(!brand) {
+					error.push(count+2);
+				} else {
+					product.brand = brand._id;
+					var result = await Product.findOne(product);
+
+					if(!result) {
+						await Product.create(product);
+					} else {
+						error.push(count+2);
+					}
+				}
+				
+			}
+		} catch(e) {
+			next(e);
+		}
+
+		res.status(200).json({message:`import completed`});
+
+	 	 if(error.length) {
+		  	console.log('error',error, error.join('\n'));
+			var destination = path.join(__dirname,'../../errors','Products'+'_'+ req.files.files.name + '_' + new Date().toISOString() + '.txt');
+			var data = `Unable to add the following product entries on line:\n${error.join('\n')}`;
+			fs.appendFile(destination,data,'utf8',(err, done)=>{
+				if(err) return next(err);
+
+			});
+	  	}
+
+    });
+});
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 var express = require('express');
 var router = express.Router();
+const { spawn } = require('child_process');
 
 router.all('/',FX.adminAuth, (req, res, next)=>{
 	var data = {};
@@ -66,8 +67,7 @@ router.post('/changePassword',FX.adminAuth,FX.validate(vrules.change_password,'c
 			return res.redirect('/admin/changePassword');
 		}
 		
-		User.findOneAndUpdate({_id:user._id,isAdmin:true},{$set:{password:bcrypt.hashSync(data.new_password, salt)}},{new:true},function(err,data)
-		{
+		User.findOneAndUpdate({_id:user._id,isAdmin:true},{$set:{password:bcrypt.hashSync(data.new_password, salt)}},{new:true},function(err,data){
 			if(err)return next(err);
 			if(data)res.redirect('/admin')
 		});

@@ -6,6 +6,7 @@ const methodOverride = require('method-override')
 const session = require('express-session');
 const MongoStore = require('connect-mongo/es5')(session);
 const nunjucks = require('nunjucks');
+const fileUpload = require('express-fileupload');
 // const favicon = require('serve-favicon');
 // const logger = require('morgan');
 require('dotenv').load();
@@ -73,7 +74,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(fileUpload());
 app.use(session({
     cookie: {
         maxAge: 60000000000
