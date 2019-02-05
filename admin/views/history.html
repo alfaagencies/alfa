@@ -175,38 +175,38 @@
         }).column(0).visible(false);
 
         $('#invoiceTable').DataTable({
-            "footerCallback": function ( row, data, start, end, display ) {
-                var api = this.api(), data;
+            // "footerCallback": function ( row, data, start, end, display ) {
+            //     var api = this.api();
+                
+            //     // Remove the formatting to get integer data for summation
+            //     var intVal = function ( i ) {
+            //         return typeof i === 'string' ?
+            //             i.replace(/<[^>]*>/g, "")*1 :
+            //             typeof i === 'number' ?
+            //                 i : 0;
+            //     };
     
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/<[^>]*>/g, "")*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
+            //     // Total over all pages
+            //     total = api
+            //         .rows()
+            //         .data()
+            //         .reduce( function (a, b) {
+            //             return intVal(a) + intVal(b[5]);
+            //         }, 0 );
     
-                // Total over all pages
-                total = api
-                    .column( 5 )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
+            //     // Total over this page
+            //     pageTotal = api
+            //         .rows({ page: 'current'})
+            //         .data()
+            //         .reduce( function (a, b) {
+            //             return intVal(a) + intVal(b[5]);
+            //         }, 0 );
     
-                // Total over this page
-                pageTotal = api
-                    .column( 5, { page: 'current'} )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-    
-                // Update footer
-                $( api.column( 5 ).footer() ).html(
-                    pageTotal +' ( '+ total +' total)'
-                );
-            }
+            //     // Update footer
+            //     $( api.column( 5 ).footer() ).html(
+            //         pageTotal +' ( '+ total +' total)'
+            //     );
+            // }
         }).column(0).visible(false);
 
         $('.csv').click(() => {
@@ -237,6 +237,7 @@
             invoiceTable.clear().draw();
             getDataAndUpdateInvoiceTable(row[0]);
             $("#Validation [name='invoice']").val(row[0]);
+            // $( $('#invoiceTable').DataTable().column( 5 ).footer() ).html('Total '+row[3]);
         });
  
         $('#invoiceTable').on( 'click', 'td:nth-child(5)', function (e) {
@@ -269,6 +270,13 @@
             }
         });
 
+        function intVal ( i ) {
+            return typeof i === 'string' ?
+                i.replace(/<[^>]*>/g, "")*1 :
+                typeof i === 'number' ?
+                    i : 0;
+        };
+
         function editProductQuantity(obj) {
             console.log("inside editProductQuantity");
             $.post('{{admin_url}}history/invoice/update',obj,function(res){
@@ -287,6 +295,9 @@
                         this.data(row);
 
                     }).draw();
+
+                    $( table.column( 5 ).footer() ).html('Total '+table.column(5).data().reduce((a,b)=>intVal(a) + intVal(b),0));
+
                 }
                 else{
                     demo.showNotification('top', 'center', res.message, 'danger', 'nc-icon');
@@ -317,8 +328,8 @@
                 id
             }, (res) => {
                 var { data } = res;
+                var table = $('#invoiceTable').DataTable();
                 data.forEach(data=>{
-                    var table = $('#invoiceTable').DataTable();
                     var go = true;
 
                     if($('#type').val() === "out" && !table.column(4).visible()) {
@@ -346,6 +357,9 @@
                         ]).draw(false);
                     }
                 });
+
+                $( table.column( 5 ).footer() ).html('Total '+table.column(5).data().reduce((a,b)=>intVal(a) + intVal(b),0));
+
             });
         }
     });
