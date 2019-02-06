@@ -187,7 +187,7 @@
                 obj[current.name] = current.value;
                 return obj;
             },{});
-            console.log();
+
             $.post('{{admin_url}}in/update',obj,function(res){
                 var { data } = res;
 
@@ -268,7 +268,8 @@
         function getDataAndUpdateTable(barCode, invoice) {
             $.post('{{admin_url}}in', {
                 barCode,
-                invoice
+                invoice,
+                date: new Date(new Date().setSeconds(+330*60)).toISOString().substring(0,10)                
             }, (res) => {
                 var { data } = res;
                 if (data) {
@@ -301,7 +302,8 @@
 
         function getDataForInvoiceAndUpdateTable(invoice){
             $.post('{{admin_url}}in/invoice', {
-                invoice
+                invoice,
+                date: new Date(new Date().setSeconds(+330*60)).toISOString().substring(0,10)                
             }, (res) => {
                 var { data } = res;
                 console.log(res);

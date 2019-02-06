@@ -13,7 +13,10 @@ router.get('/out',FX.adminAuth, (req, res, next)=>{
 });
 
 router.post('/out',FX.adminAuth,function(req,res,next){
-    var { barCode, invoice } = req.body;
+    var { barCode, invoice, date } = req.body;
+
+    var created = new Date(date);
+
     Invoice.findById(invoice,function(err,invoice){
         if(err)return next(err);
 
@@ -37,7 +40,8 @@ router.post('/out',FX.adminAuth,function(req,res,next){
                 product: result._id,
                 invoice: invoice._id,
                 type:'out',
-                created: new Date(new Date().toISOString().substring(0,10))
+                created
+                // created: new Date(new Date().toISOString().substring(0,10))
             },(err, data)=>{
                 if(err)return next(err);
                 
@@ -47,7 +51,8 @@ router.post('/out',FX.adminAuth,function(req,res,next){
                         product: result._id,
                         invoice: invoice._id,
                         type:'out',
-                        created: new Date(new Date().toISOString().substring(0,10))
+                        created
+                        // created: new Date(new Date().toISOString().substring(0,10))
                     },{ 
                         $inc:{qty:1}
                     },{
@@ -78,8 +83,9 @@ router.post('/out',FX.adminAuth,function(req,res,next){
 });
 
 router.post('/out/invoice', FX.adminAuth, function(req,res,next){
-    var { invoice } = req.body;
+    var { invoice, date } = req.body;
     var [name, city] = invoice.split(',').map(val=>val.trim());
+    var created = new Date(date); 
 
     User.findOne({ name, city },(err,user)=>{
         if(err) return next(err);
@@ -87,7 +93,8 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
         {
             Invoice.findOne({
                 invoice,
-                created:{ $gte: new Date(new Date().toISOString().substring(0,10)) },
+                // created:{ $gte: new Date(new Date().toISOString().substring(0,10)) },
+                created:{ $gte: created },
                 completed:false
             },function(err,inVoice){
                 if(err) return next(err);
@@ -98,7 +105,8 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
                     {
                         Invoice.create({
                             invoice,
-                            created: new Date(new Date().toISOString().substring(0,10))
+                            // created: new Date(new Date().toISOString().substring(0,10))
+                            created
                         },(err,invoice)=>{
                             if(err) return next(err);
                             resolve(invoice);

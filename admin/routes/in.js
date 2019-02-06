@@ -4,7 +4,9 @@ var router = express.Router();
 router.get('/in',FX.adminAuth, (req, res, next)=>res.render('in.html'));
 
 router.post('/in',FX.adminAuth,function(req,res,next){
-    var { barCode, invoice } = req.body;
+    var { barCode, invoice, date } = req.body;
+    var created = new Date(date);
+
     Invoice.findOne({ invoice },function(err,invoice){
         if(err)return next(err);
 
@@ -28,7 +30,8 @@ router.post('/in',FX.adminAuth,function(req,res,next){
                 product: result._id,
                 invoice: invoice._id,
                 type:'in',
-                created: new Date(new Date().toISOString().substring(0,10))
+                // created: new Date(new Date().toISOString().substring(0,10))
+                created
             },{ 
                 $inc:{qty:1}
             },{
@@ -49,7 +52,9 @@ router.post('/in',FX.adminAuth,function(req,res,next){
 });
 
 router.post('/in/invoice', FX.adminAuth, function(req,res,next){
-    var { invoice } = req.body;
+    var { invoice, date } = req.body;
+    var created = new Date(date);
+    
     Invoice.findOne({
         invoice,
     },function(err,inVoice){
@@ -66,7 +71,8 @@ router.post('/in/invoice', FX.adminAuth, function(req,res,next){
             {
                 Invoice.create({
                     invoice,
-                    created: new Date(new Date().toISOString().substring(0,10))
+                    // created: new Date(new Date().toISOString().substring(0,10))
+                    created
                 },(err,invoice)=>{
                     if(err) return next(err);
                     resolve(invoice);

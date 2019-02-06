@@ -284,7 +284,8 @@
         function getDataAndUpdateTable(barCode, invoice) {
             $.post('{{admin_url}}out', {
                 barCode,
-                invoice
+                invoice,
+                date: new Date(new Date().setSeconds(+330*60)).toISOString().substring(0,10)                
             }, (res) => {
                 var { data } = res;
                 if (!res.error) {
@@ -319,7 +320,8 @@
 
         function getDataForInvoiceAndUpdateTable(invoice){
             $.post('{{admin_url}}out/invoice', {
-                invoice
+                invoice,
+                date: new Date(new Date().setSeconds(+330*60)).toISOString().substring(0,10)                
             }, (res) => {
                 var { data } = res;
                 if (!res.error) {
