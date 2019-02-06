@@ -2,7 +2,10 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var brandSchema = new Schema({
-	name:String,
+	name:{
+		type:String,
+		uppercase: true
+	},
 	isArchive: {
 		type: Boolean,
 		default: false

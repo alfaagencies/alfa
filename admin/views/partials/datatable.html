@@ -20,7 +20,7 @@
                 url:'/admin/users/find',
                 type:'POST',
                 "dataSrc": function ( json ) {
-                    console.log(json)
+                    // console.log(json)
                     var arr=[];
                     var start=json.pop()+1;
                     for (var i in json)
@@ -71,18 +71,18 @@
                 
 
                 this.on("complete", function(file) {
-                    console.log("file");
+                    // console.log("file");
                     $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
                     $('.dz-success-mark').hide();
                 });
 
                 this.on("success",function(file){
-                    console.log("file completed",file);
+                    // console.log("file completed",file);
                     location.href='/food_module';
                 });
 
                 this.on("removedfile", function(file) {
-                    console.log("file removed",file);
+                    // console.log("file removed",file);
                     $.get('/dish/delete_image?id='+dishId+'&name='+file.full_name+'&path='+file.path,function(data){
                         console.log(data);
                     });
@@ -90,7 +90,7 @@
                 });
 
                 this.on("addedfile",function(file){
-                    console.log("file",file);
+                    // console.log("file",file);
                     files++;
                     $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
                     $(".dz-preview").addClass('dz-complete');

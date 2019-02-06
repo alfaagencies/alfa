@@ -142,7 +142,6 @@ router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
 });
 
 router.post('/products/import', FX.adminAuth, function(req,res,next){
-	console.log("inside products=========>",req.files);
 	var readable = new Readable();
 	readable.push(req.files.files.data);
 	readable.push(null);
@@ -159,15 +158,13 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 
     readable.pipe(parse({delimiter: ','}))
     .on('data', function(csvrow) {
-		console.log("csvrow===========>",csvrow);
 		if(count === 0) {
 			firstRow = csvrow;
 		} else {
 			var product = {}; 
 			for(var i = 0; i< csvrow.length; i++) {
-				product[headers[firstRow[i]]] = csvrow[i];
+				product[headers[firstRow[i]]] = (firstRow[i] === "Brand" || firstRow[i] === "Style With Color") ? csvrow[i].toUpperCase() : csvrow[i];
 			}
-			console.log("product======>",product);
 			csvData.push(product);
 		}
 		count++;       
@@ -200,7 +197,6 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 		res.status(200).json({message:`import completed`});
 
 	 	 if(error.length) {
-		  	console.log('error',error, error.join('\n'));
 			var destination = path.join(__dirname,'../../errors','Products'+'_'+ req.files.files.name + '_' + new Date().toISOString() + '.txt');
 			var data = `Unable to add the following product entries on line:\n${error.join('\n')}`;
 			fs.appendFile(destination,data,'utf8',(err, done)=>{

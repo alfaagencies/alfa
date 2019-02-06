@@ -278,7 +278,6 @@
         };
 
         function editProductQuantity(obj) {
-            console.log("inside editProductQuantity");
             $.post('{{admin_url}}history/invoice/update',obj,function(res){
                 var { data } = res;
 

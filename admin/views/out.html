@@ -2,7 +2,11 @@
 <html lang="en">
 {% import "macros/head.html" as head %}
 {{head.title('Alfa Agencies')}}
-
+<style>
+    .btn-group>.btn:first-child {
+        margin-left: 10px
+    }
+</style>
 <body>
     <div class="wrapper">
         {% include "partials/sidebar.html" %}
@@ -26,9 +30,10 @@
                                             <input type="text" id="invoiceId" class="form-control" hidden />
                                         </div>
                                         <div class="col-sm-1">
-                                            <button class="btn btn-icon btn-round btn-danger ok">Ok</button>
+                                            <button style="padding:10px" class="btn btn-icon btn-round btn-danger ok">Ok</button>
                                         </div>
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-4 text-center">
+                                                <button style="cursor:default"   class="text-center btn btn-icon btn-lg btn-link">OUT</button>
                                         </div>
                                         <div class="col-sm-3">
                                             <input type="text" id="barcode" class="form-control" placeholder="Bar Code"/>

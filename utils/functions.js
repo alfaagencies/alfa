@@ -115,7 +115,6 @@ module.exports = {
             {
                 var errObj= validation.errors.all();
                 req.flash('error',errObj[Object.keys(errObj)[0]][0]);
-                console.log("validation failed",errObj[Object.keys(errObj)[0]][0]);
                 res.locals.messages=req.flash();
                 res.render(template,{body:req.body});
             }

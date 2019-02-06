@@ -169,24 +169,20 @@
             var fileUpload=this;
             var message;
             this.on("complete", function(file) {
-                console.log("file",file);
                 $(".dz-remove").html("<div><span class='fa fa-trash text-info' style='font-size: 1.5em'></span></div>");
                 $('.dz-success-mark').hide();
                 location.href = '{{admin_url}}clients';
             });
 
             this.on("success",function(file){
-                console.log("file completed",file);
             });
 
             this.on("removedfile", function(file) {
-                console.log("file removed",file);
 
                 fileUpload.setupEventListeners();
             });
 
             this.on("addedfile",function(file){
-                console.log("file",file);
                 $(".dz-remove").html("<div><span class='fa fa-trash text-info' style='font-size: 1.5em'></span></div>");
                 $(".dz-preview").addClass('dz-complete');
             });

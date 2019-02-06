@@ -6,7 +6,10 @@ var productSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Brand"
     },
-	styleCode:String,
+	styleCode:{ 
+		type:String,
+		uppercase: true
+	},
     mrp:Number,
     size:Number,
 	barCode:String,

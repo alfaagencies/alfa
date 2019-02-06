@@ -4,11 +4,13 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
 	name: {
 		type: String,
-		default: ''
+		default: '',
+		uppercase: true
 	},
 	city: {
 		type: String,
-		default: ''
+		default: '',
+		uppercase: true
 	},
 	password:  String,
 	isAdmin: {

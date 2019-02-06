@@ -110,7 +110,7 @@ router.post('/clients/import', FX.adminAuth, function(req,res,next){
 		} else {
 			var user = {}; 
 			for(var i = 0; i< csvrow.length; i++) {
-				user[headers[firstRow[i]]] = csvrow[i];
+				user[headers[firstRow[i]]] = csvrow[i].toUpperCase();
 			}
 
 			csvData.push(user);
@@ -137,7 +137,6 @@ router.post('/clients/import', FX.adminAuth, function(req,res,next){
 		res.status(200).json({message:`import completed`});
 
 	 	 if(error.length) {
-		  	console.log('error',error, error.join('\n'));
 			var destination = path.join(__dirname,'../../errors','Clients'+'_'+ req.files.files.name + '_' + new Date().toISOString() + '.txt');
 			var data = `Unable to add the following client entries on line:\n${error.join('\n')}`;
 			fs.appendFile(destination,data,'utf8',(err, done)=>{

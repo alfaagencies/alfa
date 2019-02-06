@@ -33,7 +33,6 @@ router.all('/',FX.adminAuth, (req, res, next)=>{
 		data.inCount = (done[0][0] && done[0][0].count) || 0;
 		data.outCount = (done[1][0] && done[1][0].count) || 0;
 		data.stockCount = (done[2][0] && done[2][0].count) || 0;
-console.log(data, done);
 		return res.render('dashboard.html', { data });	
 	})
 	.catch(err=>{
