@@ -217,7 +217,7 @@ router.post('/brands/edit', FX.adminAuth, function (req, res, next) {
 });
 
 router.get('/brands/delete/:id', FX.adminAuth, function (req, res, next) {
-	Brand.removeById(req.params.id, function (err, result) {
+	Brand.deleteOne({ _id: ObjectId(req.params.id) }, function (err, result) {
 		if (err) return next(err);
 		if (result)
 		Product.deleteMany({ brand: ObjectId(req.params.id) }, (err, result) => {
