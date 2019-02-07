@@ -24,7 +24,7 @@ let DM_en = require('./locale/en').APP_MESSAGES;
 mongoose.connect(process.env.MONGO_URI,{ 
 	useCreateIndex: true,
 	useNewUrlParser: true 
-});
+},(a,b)=>{console.log(a,b)});
 
 fs.readdirSync('./models').forEach(function(file) {
 	var model = file.split('.')[0];
