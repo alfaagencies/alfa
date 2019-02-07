@@ -106,7 +106,8 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 });
 
 router.post('/products/add',FX.adminAuth,function(req,res,next){
-	Product.findOne(req.body,(err,result)=>{
+	var { brand, styleCode, size } = req.body;
+	Product.findOne({ brand, styleCode, size },(err,result)=>{
 		if(err)return next(err);
 		if(!result)
 		{
@@ -161,11 +162,13 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 		if(count === 0) {
 			firstRow = csvrow;
 		} else {
-			var product = {}; 
-			for(var i = 0; i< csvrow.length; i++) {
-				product[headers[firstRow[i]]] = (firstRow[i] === "Brand" || firstRow[i] === "Style With Color") ? csvrow[i].toUpperCase() : csvrow[i];
+			if(csvrow.indexOf("") === -1) {
+				var product = {}; 
+				for(var i = 0; i< csvrow.length; i++) {
+					product[headers[firstRow[i]]] = (firstRow[i] === "Brand" || firstRow[i] === "Style With Color") ? csvrow[i].toUpperCase() : csvrow[i];
+				}
+				csvData.push(product);
 			}
-			csvData.push(product);
 		}
 		count++;       
     })
@@ -180,7 +183,8 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 					error.push(count+2);
 				} else {
 					product.brand = brand._id;
-					var result = await Product.findOne(product);
+					var { brand, styleCode, size } = product;
+					var result = await Product.findOne({ brand, styleCode, size });
 
 					if(!result) {
 						await Product.create(product);

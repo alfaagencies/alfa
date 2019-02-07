@@ -108,12 +108,14 @@ router.post('/clients/import', FX.adminAuth, function(req,res,next){
 		if(count === 0) {
 			firstRow = csvrow;
 		} else {
-			var user = {}; 
-			for(var i = 0; i< csvrow.length; i++) {
-				user[headers[firstRow[i]]] = csvrow[i].toUpperCase();
+			if(csvrow.indexOf("") === -1) {
+				var user = {}; 
+				for(var i = 0; i< csvrow.length; i++) {
+					user[headers[firstRow[i]]] = csvrow[i].toUpperCase();
+				}
+	
+				csvData.push(user);
 			}
-
-			csvData.push(user);
 		}
 		count++;       
     })
