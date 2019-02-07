@@ -217,13 +217,16 @@ router.post('/brands/edit', FX.adminAuth, function (req, res, next) {
 });
 
 router.get('/brands/delete/:id', FX.adminAuth, function (req, res, next) {
-	Brand.findByIdAndUpdate(req.params.id, { $set: { isArchive: true } }, function (err, result) {
+	Brand.removeById(req.params.id, function (err, result) {
 		if (err) return next(err);
 		if (result)
-			Product.updateMany({ brand: ObjectId(req.params.id) }, { $set: { isArchive: true } }, (err, result) => {
+		Product.deleteMany({ brand: ObjectId(req.params.id) }, (err, result) => {
+			if (err) return next(err);
+			Stock.deleteMany({ brand: ObjectId(req.params.id) }, (err, result) => {
 				if (err) return next(err);
 				res.status(200).json({ message: `brand deleted` });
 			});
+		});
 	});
 });
 

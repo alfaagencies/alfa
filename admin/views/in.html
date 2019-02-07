@@ -17,7 +17,7 @@
                                 <div class="toolbar">
                                     <div class="row">
                                         <div class="col-sm-3">
-                                            <input type="text" id="invoice" class="form-control" placeholder="Invoice Number" autofocus/>
+                                            <input type="text" id="invoice" class="form-control" placeholder="Invoice Number" autocomplete="off" autofocus/>
                                         </div>
                                         <div class="col-sm-1">
                                             <button class="btn btn-icon btn-round btn-danger ok">Ok</button>
@@ -26,7 +26,7 @@
                                             <button style="cursor:default"   class="text-center btn btn-icon btn-lg btn-link"><h1 style="color:rgb(251, 64, 75);">IN</h1></button>
                                         </div>
                                         <div class="col-sm-3">
-                                            <input type="text" id="barcode" class="form-control" placeholder="Bar Code"/>
+                                            <input type="text" id="barcode" class="form-control" placeholder="Bar Code" autocomplete="off"/>
                                             <br />
                                             <br />
                                             &nbsp;
@@ -95,7 +95,7 @@
                         {{form.hidden('invoice',body.invoice,'')}}
                         {{form.hidden('barCode',body.barCode,'')}}
 
-                        {{form.input('Quantity','text','in',body.in,'',"number=true","required=true")}}
+                        {{form.input('Quantity','text','in',body.in,'',"number=true","required=true","autocomplete=off")}}
 
                         <div class="form-group">
                             <div class="text-center">

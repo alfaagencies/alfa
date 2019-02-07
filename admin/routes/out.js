@@ -50,6 +50,7 @@ router.post('/out',FX.adminAuth,function(req,res,next){
                     Stock.updateOne({ 
                         product: result._id,
                         invoice: invoice._id,
+                        brand: result.brand._id,
                         type:'out',
                         created
                         // created: new Date(new Date().toISOString().substring(0,10))

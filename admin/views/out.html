@@ -36,7 +36,7 @@
                                                 <button style="cursor:default"   class="text-center btn btn-icon btn-lg btn-link"><h1 style="color:rgb(251, 64, 75);">OUT</h1></button>
                                         </div>
                                         <div class="col-sm-3">
-                                            <input type="text" id="barcode" class="form-control" placeholder="Bar Code"/>
+                                            <input type="text" id="barcode" class="form-control" placeholder="Bar Code" autocomplete="off"/>
                                             <br />
                                             <br />
                                             &nbsp;
@@ -105,7 +105,7 @@
                         {{form.hidden('invoice',body.invoice,'')}}
                         {{form.hidden('barCode',body.barCode,'')}}
 
-                        {{form.input('Quantity','text','out',body.out,'',"number=true","required=true")}}
+                        {{form.input('Quantity','text','out',body.out,'',"number=true","required=true","autocomplete=off")}}
 
                         <div class="form-group">
                             <div class="text-center">

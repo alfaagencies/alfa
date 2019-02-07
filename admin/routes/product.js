@@ -136,9 +136,12 @@ router.post('/products/edit',FX.adminAuth,function(req,res,next){
     });
 });
 router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
-	Product.findByIdAndUpdate(req.params.id,{$set:{isArchive:true}},function(err,result){
+	Product.removeById(req.params.id,function(err,result){
 		if(err)return next(err);
-		if(result) return res.status(200).json({message:`product deleted`});
+		Stock.deleteMany({ product: ObjectId(req.params.id) }, (err,result)=>{
+			if(err)return next(err);
+			if(result) return res.status(200).json({message:`product deleted`});
+		});
 	});
 });
 

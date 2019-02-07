@@ -29,6 +29,7 @@ router.post('/in',FX.adminAuth,function(req,res,next){
             Stock.findOneAndUpdate({ 
                 product: result._id,
                 invoice: invoice._id,
+                brand: result.brand._id,
                 type:'in',
                 // created: new Date(new Date().toISOString().substring(0,10))
                 created
