@@ -108,26 +108,28 @@ router.post('/clients/import', FX.adminAuth, function(req,res,next){
 		if(count === 0) {
 			firstRow = csvrow;
 		} else {
-			if(csvrow.indexOf("") === -1) {
-				var user = {}; 
-				for(var i = 0; i< csvrow.length; i++) {
-					user[headers[firstRow[i]]] = csvrow[i].toUpperCase();
-				}
-	
-				csvData.push(user);
+			var user = {}; 
+			for(var i = 0; i< csvrow.length; i++) {
+				user[headers[firstRow[i]]] = csvrow[i].toUpperCase();
 			}
+
+			csvData.push(user);			
 		}
 		count++;       
     })
     .on('end', async function() {
-
 		try {
 			for(const [count,user] of csvData.entries()) {
-	
-				var result = await User.findOne(user);
 				
-				if(!result) {
-					await User.create(user);
+				if(Object.values(user).indexOf("") === -1) {
+
+					var result = await User.findOne(user);
+					
+					if(!result) {
+						await User.create(user);
+					} else {
+						error.push(count+2);
+					}
 				} else {
 					error.push(count+2);
 				}

@@ -162,13 +162,11 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 		if(count === 0) {
 			firstRow = csvrow;
 		} else {
-			if(csvrow.indexOf("") === -1) {
-				var product = {}; 
-				for(var i = 0; i< csvrow.length; i++) {
-					product[headers[firstRow[i]]] = (firstRow[i] === "Brand" || firstRow[i] === "Style With Color") ? csvrow[i].toUpperCase() : csvrow[i];
-				}
-				csvData.push(product);
+			var product = {}; 
+			for(var i = 0; i< csvrow.length; i++) {
+				product[headers[firstRow[i]]] = (firstRow[i] === "Brand" || firstRow[i] === "Style With Color") ? csvrow[i].toUpperCase() : csvrow[i];
 			}
+			csvData.push(product);
 		}
 		count++;       
     })
@@ -176,23 +174,25 @@ router.post('/products/import', FX.adminAuth, function(req,res,next){
 
 		try {
 			for(var [count,product] of csvData.entries()) {
+				if(Object.values(product).indexOf("") === -1) {
+					var brand = await Brand.findOne({ name: product.brand });
 	
-				var brand = await Brand.findOne({ name: product.brand });
-
-				if(!brand) {
-					error.push(count+2);
-				} else {
-					product.brand = brand._id;
-					var { brand, styleCode, size } = product;
-					var result = await Product.findOne({ brand, styleCode, size });
-
-					if(!result) {
-						await Product.create(product);
-					} else {
+					if(!brand) {
 						error.push(count+2);
-					}
+					} else {
+						product.brand = brand._id;
+						var { brand, styleCode, size } = product;
+						var result = await Product.findOne({ brand, styleCode, size });
+	
+						if(!result) {
+							await Product.create(product);
+						} else {
+							error.push(count+2);
+						}
+					} 
+				} else {
+					error.push(count+2);
 				}
-				
 			}
 		} catch(e) {
 			next(e);
