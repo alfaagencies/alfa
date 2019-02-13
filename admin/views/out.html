@@ -187,7 +187,8 @@
         $('#activate').change(checkActivation);
 
         $('#outTable').on( 'click', 'td:last-child', function (e) {
-            var row = $('#outTable').DataTable().rows().data()[$(this).closest("tr").index()];
+            var table = $('#outTable').DataTable();
+            var row = table.rows().data()[table.page.info().start+$(this).closest("tr").index()];
             $('#Validation [name="barCode"]').val(row[0]);
             $('#Validation [name="invoice"]').val($('#invoice').val());
             $('#Validation [name="out"]').val(row[row.length - 1].replace(/<[^>]*>/g, ""));
