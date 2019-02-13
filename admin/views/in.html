@@ -198,7 +198,7 @@
                         var row = this.data();
                         if (row[0] === obj.barCode) {
                             go = false;
-                            row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
+                            row[row.length - 1] = `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
                         }
 
                         this.data(row);
@@ -280,7 +280,7 @@
                         var row = this.data();
                         if (row[0] === barCode) {
                             go = false;
-                            row[row.length - 1] = `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
+                            row[row.length - 1] = `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`;
                         }
 
                         this.data(row);
@@ -294,7 +294,7 @@
                             data.styleCode,
                             data.mrp,
                             data.size,
-                            `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`
+                            `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`
                         ]).draw();
                     }
                 }
@@ -316,7 +316,7 @@
                             data.styleCode,
                             data.mrp,
                             data.size,
-                            `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`                            
+                            `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>`                            
                         ]).draw(false);
                     });
                 }

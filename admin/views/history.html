@@ -290,7 +290,7 @@
                         var row = this.data();
                         if (row[0] === obj.barCode) {
                             go = false;
-                            row[row.length - 1] = isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${obj.qty}</a>`:obj.qty;
+                            row[row.length - 1] = isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${obj.qty}</a>`:obj.qty;
                         }
 
                         this.data(row);
@@ -317,7 +317,7 @@
                     $('#historyTable').DataTable().row.add([
                         invoice.invoice._id,
                         new Date(invoice._id.created).toISOString().substring(0,10),
-                        `<a href="javascript:void(0)" class="invoice" data-toggle="modal" data-target="#showInvoiceDetails" rel="tooltip" title="Show Details">${invoice.invoice.invoice}</a>`,
+                        `<a href="javascript:void(0)" style="color:#6d8764;" class="invoice" data-toggle="modal" data-target="#showInvoiceDetails" rel="tooltip" title="Show Details">${invoice.invoice.invoice}</a>`,
                         invoice.qty,
                     ]).draw(false);
                 });
@@ -354,7 +354,7 @@
                             data.product.styleCode,
                             data.product.mrp,
                             data.product.size,
-                            isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>` : data.qty
+                            isAdmin && table.column(4).visible() ? `<a href="javascript:void(0)" style="color:#6d8764;" class="edit" data-toggle="modal" data-target="#editQty" rel="tooltip" title="Edit Qty">${data.qty}</a>` : data.qty
                         ]).draw(false);
                     }
                 });
