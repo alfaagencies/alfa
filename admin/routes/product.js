@@ -136,7 +136,7 @@ router.post('/products/edit',FX.adminAuth,function(req,res,next){
     });
 });
 router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){
-	Product.removeById(req.params.id,function(err,result){
+	Product.deleteOne({ _id: ObjectId(req.params.id) },function(err,result){
 		if(err)return next(err);
 		Stock.deleteMany({ product: ObjectId(req.params.id) }, (err,result)=>{
 			if(err)return next(err);

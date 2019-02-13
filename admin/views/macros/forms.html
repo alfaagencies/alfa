@@ -14,9 +14,9 @@
 <input type="hidden" name="{{name}}"  class="form-control" value="{{ ifvalue if ifvalue else elsevalue }}" {{options1}} />
 {% endmacro %}
 
-{% macro input(placeholder,type,name,ifvalue,elsevalue,options1,options2,options3) %}
+{% macro input(placeholder,type,name,ifvalue,elsevalue,options1,options2,options3,options4) %}
 <div class="form-group">
-	<input type="{{type}}" name="{{name}}" {{options1}} {{options2}} {{options3}} class="form-control" placeholder="{{placeholder}}" value="{{ ifvalue if ifvalue else elsevalue }}" />
+	<input type="{{type}}" name="{{name}}" {{options1}} {{options2}} {{options3}} {{options4}} class="form-control" placeholder="{{placeholder}}" value="{{ ifvalue if ifvalue else elsevalue }}" />
 </div>
 {% endmacro %}
 
