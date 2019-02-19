@@ -76,15 +76,23 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 		query["$or"]=[];
 		search_arr.forEach(function(field){
 			var obj={};
-			["mrp","size"].indexOf(field) === -1 ?
-			obj[field] = {
-				'$regex': req.body['search[value]'],
-		        '$options': 'i'
-			}: obj =
-			{
-				'$where': `/${req.body['search[value]']}/.test(this.${field})`,
-			}; 
-			query["$or"].push(obj);
+			if(["mrp","size"].indexOf(field) === -1 ) {
+
+				obj[field] = {
+					'$regex': req.body['search[value]'].replace(/([\.\(\)\\])/g,"\\$1"),
+					'$options': 'i'
+				};
+
+				query["$or"].push(obj);
+			} else {
+				if(req.body['search[value]'].search(/([\.\(\)\\])/g) === -1) {
+					obj =
+					{
+						'$where': `/${req.body['search[value]']}/.test(this.${field})`,
+					}; 
+					query["$or"].push(obj);
+				}
+			}
 		});
 	}
 

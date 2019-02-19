@@ -106,7 +106,7 @@ router.post('/brands/find', FX.adminAuth, (req, res, next) => {
 			var obj = {};
 			obj[field] =
 				{
-					'$regex': req.body['search[value]'],
+					'$regex': req.body['search[value]'].replace(/([\.\(\)\\])/g,"\\$1"),
 					'$options': 'i'
 				}
 			query["$or"].push(obj);
@@ -251,7 +251,7 @@ router.post('/brands/styles/find', FX.adminAuth, (req, res, next) => {
 			var obj = {};
 			obj[field] =
 				{
-					'$regex': req.body['search[value]'],
+					'$regex': req.body['search[value]'].replace(/([\.\(\)\\])/g,"\\$1"),
 					'$options': 'i'
 				}
 			query["$or"].push(obj);
