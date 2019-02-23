@@ -1404,7 +1404,9 @@ demo = {
                 {
                     $.get(path);
                     swal({title:"Deleted!",text:"Your listing has been deleted.",type:"success",closeOnConfirm: false,confirmButtonText:'OK'},function(value){
-                        location.href=reload;
+                        if(reload) {
+                            location.href=reload
+                        };
                     });
                 }
             });

@@ -27,6 +27,9 @@
                                                 <option value="{{client.name}}, {{client.city}}">{{client.name}}, {{client.city}}</option>
                                                 {% endfor %}
                                             </select>
+                                            <br/>
+                                            <br/>
+                                            <button style="display:none;margin-left: 10px" id="cancel" class="btn btn-icon btn-danger ok">Cancel</button>
                                             <input type="text" id="invoiceId" class="form-control" hidden />
                                         </div>
                                         <div class="col-sm-1">
@@ -256,9 +259,14 @@
                 {
                     $('#invoice').attr('disabled',false);
                     $(this).text('Ok');
+                    $('#cancel').hide();
                 }
 
             }
+        });
+
+        $('#cancel').on('click',function(){
+            demo.showSwal("warning-message-and-confirmation",`{{admin_url}}out/delete/${$('#invoiceId').val()}`,"invoice","{{admin_url}}out");
         });
 
         function checkActivation() {
@@ -327,6 +335,7 @@
                 var { data } = res;
                 if (!res.error) {
                     $('#invoiceId').val(res.invoiceId);
+                    !res.completed && $('#cancel').show();
                     data.forEach(data=>{
                         var go = true;
                         $('#outTable').DataTable().rows().every(function () {

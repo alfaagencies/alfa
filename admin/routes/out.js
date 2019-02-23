@@ -139,6 +139,7 @@ router.post('/out/invoice', FX.adminAuth, function(req,res,next){
                             error: false,
                             message:'Activity Successfull',
                             invoiceId: invoice._id,
+                            completed: invoice.completed,
                             data:data.map(data=>({
                                 ...data.product,
                                 qty: data.qty
@@ -239,6 +240,17 @@ router.post('/out/update', FX.adminAuth, function(req, res, next){
                     data:{}
                 });
             }
+        });
+    });
+});
+
+router.get('/out/delete/:invoice', FX.adminAuth, function(req, res, next){
+    var { invoice } = req.params;
+    Invoice.deleteOne({ _id:ObjectId(invoice), completed: false }, function(err,invoice){
+        if(err)return next(err);
+
+        res.json({ 
+            message:'Activity Successfull'
         });
     });
 });
