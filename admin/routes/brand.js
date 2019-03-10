@@ -13,7 +13,8 @@ router.get('/brands/csv', FX.adminAuth, (req, res, next) => {
 			$group: {
 				_id: { brand: "$brand", styleCode: "$styleCode" },
 				mrp: { $first: "$mrp" },
-				size: { $push: { size: "$size", count: { $sum: "$qty" } } }
+				size: { $push: { size: "$size", count: { $sum: "$qty" } } },
+				totalQty: { $sum: "$qty" }
 			}
 		},
 		{
@@ -52,31 +53,35 @@ router.get('/brands/csv', FX.adminAuth, (req, res, next) => {
 		];
 
 		csv.stringify(
-			result.map(element => {
-				var obj = {
-					"1": "N/A",
-					"2": "N/A",
-					"3": "N/A",
-					"4": "N/A",
-					"5": "N/A",
-					"6": "N/A",
-					"7": "N/A",
-					"8": "N/A",
-					"9": "N/A",
-					"10": "N/A",
-					"11": "N/A",
-					"12": "N/A",
-					"13": "N/A"
-				};
-				obj.brand = element.brand.name;
-				obj.styleCode = element._id.styleCode;
-				obj.mrp = element.mrp;
+			result.reduce((arr,element) => {
+				
+				if(element.totalQty > 0) {
+					var obj = {
+						"1": "N/A",
+						"2": "N/A",
+						"3": "N/A",
+						"4": "N/A",
+						"5": "N/A",
+						"6": "N/A",
+						"7": "N/A",
+						"8": "N/A",
+						"9": "N/A",
+						"10": "N/A",
+						"11": "N/A",
+						"12": "N/A",
+						"13": "N/A"
+					};
+					obj.brand = element.brand.name;
+					obj.styleCode = element._id.styleCode;
+					obj.mrp = element.mrp;
 
-				element.size.forEach(el => {
-					obj[el.size] = el.count;
-				});
-				return obj;
-			}),
+					element.size.forEach(el => {
+						obj[el.size] = el.count;
+					});
+					arr.push(obj);
+				}
+				return arr;
+			},[]),
 			{ header: true, columns: columns }, (err, output) => {
 				res.json(output);
 			});
