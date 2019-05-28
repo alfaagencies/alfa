@@ -20,7 +20,7 @@
             </div>
             <div class="info">
                 <a href="javascript:void(0)">
-                    <span>Administrator</span>
+                    <span>{{ "Administrator" if user.isAdmin else "Crew" }}</span>
                 </a>
             </div>
         </div>

@@ -9,7 +9,7 @@ const nunjucks = require('nunjucks');
 const fileUpload = require('express-fileupload');
 // const favicon = require('serve-favicon');
 // const logger = require('morgan');
-require('dotenv').load();
+require('dotenv').config();
 
 global.bcrypt = require('bcrypt');
 global.flash = require('connect-flash');
