@@ -8,7 +8,11 @@ router.get('/out',FX.adminAuth, (req, res, next)=>{
         isArchive: false
     },(err,clients)=>{
         if(err) return next(err);
-        res.render('out.html',{ clients });
+
+        Brand.find({},'barcodeLength',(err, brand)=>{
+            if(err) return next(err);
+            res.render('out.html',{ barcodeLength: brand.map(brand=> brand.barcodeLength), clients });
+        });
     });
 });
 

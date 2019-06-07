@@ -185,6 +185,9 @@ router.post('/brands/find', FX.adminAuth, (req, res, next) => {
 
 router.post('/brands/check', FX.adminAuth, function (req, res, next) {
 	var body = req.body;
+	if(body._id) {
+		body._id = { $ne: ObjectId(body._id) };
+	};
 
 	Brand.count(body, (err, brand) => {
 		if (err) return next(err);
@@ -205,6 +208,8 @@ router.post('/brands/check', FX.adminAuth, function (req, res, next) {
 
 router.post('/brands/add', FX.adminAuth, function (req, res, next) {
 	var body = req.body;
+	
+	body.barcodeLength = body.barcodeLength ? body.barcodeLength.split(",") : [];
 
 	Brand.create(body, (err, brand) => {
 		if (err) return next(err);
@@ -213,7 +218,9 @@ router.post('/brands/add', FX.adminAuth, function (req, res, next) {
 });
 
 router.post('/brands/edit', FX.adminAuth, function (req, res, next) {
-	var body = req.body
+	var body = req.body;
+
+	body.barcodeLength = body.barcodeLength ? body.barcodeLength.split(",") : [];
 
 	Brand.findByIdAndUpdate(body.id, body, function (err, result) {
 		if (err) return next(err);

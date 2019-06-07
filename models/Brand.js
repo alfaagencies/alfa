@@ -9,6 +9,10 @@ var brandSchema = new Schema({
 	isArchive: {
 		type: Boolean,
 		default: false
+	},
+	barcodeLength: {
+		type: Array,
+		default: []
 	}
 },
 {

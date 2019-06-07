@@ -91,11 +91,13 @@
                                     </div>
                                 </div>
                                 {% import "macros/forms.html" as form %}
-                                <form id="addValidation" method="POST" action="{{admin_url}}brands/add">
+                                <form id="addValidation" method="POST" action="{{admin_url}}brands/add" onkeypress="return event.keyCode != 13;">
                                     <h3 class="card-description text-center">Add Brand</h3>
                                     <br />
 
                                     {{form.input('Brand Name','text','name',body.name,'',"required=true","autocomplete=off")}}
+
+                                    {{form.input('Barcode Length','text','barcodeLength',body.barcodeLength,'',"required=true","autocomplete=off","number=true")}}
 
 
                                     <div class="form-group">
@@ -104,13 +106,13 @@
                                         </div>
                                     </div>
                                 </form>
-                                <form id="Validation" style="display:none;" method="POST" action="{{admin_url}}brands/edit">
+                                <form id="Validation" style="display:none;" method="POST" action="{{admin_url}}brands/edit" onkeypress="return event.keyCode != 13;">
                                     <h3 class="card-description text-center">Edit Brand</h3>
                                     <br />
 
                                     {{form.hidden('id',body.id,'')}}
                                     {{form.input('Brand Name','text','name',body.name,'',"required=true","autocomplete=off")}}
-
+                                    {{form.input('Barcode Length','text','barcodeLength',body.barcodeLength,'',"required=true","autocomplete=off","number=true")}}
 
                                     <div class="form-group">
                                         <div class="text-center">
@@ -161,6 +163,7 @@
 {{plugins.script('bootstrap-notify')}}
 {{plugins.script('sweetalert2.min')}}
 {{plugins.script('jquery.validate.min')}}
+{{plugins.script('bootstrap-tagsinput')}}
 {{plugins.script('jquery.dataTables.min')}}
 {{plugins.script('buttons.html5.min')}}
 {{plugins.script('light-bootstrap-dashboard')}}
@@ -205,14 +208,14 @@
                     for (var i in json.data) {
                         arr.push(isAdmin ? {
                             's_no': '',
-                            'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span>',
+                            'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span><span style="display:none">' + json.data[i].brand.barcodeLength.join(",") + '</span>',
                             'qty': json.data[i].qty,
                             'actions': '<div class="text-center"><a href="javascript:void(0)" class="btn btn-round  btn-icon btn-danger edit" rel="tooltip" title="Edit Brand"><i class="fa fa-edit"></i></a><br/><a onclick=demo.showSwal("warning-message-and-confirmation","{{admin_url}}brands/delete/' + json.data[i]._id + '","brand","{{admin_url}}brands") href="javascript:void(0)" class="btn btn-round btn-icon btn-danger remove" rel="tooltip" title="Delete Brand"><i class="fa fa-trash-o"></i></a></div>',
                             'sno':''
                         } :
                             {
                                 's_no': '',
-                                'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span>',
+                                'name': '<span>' + json.data[i].brand.name + '</span><span style="display:none">' + json.data[i].brand._id + '</span><span style="display:none">' + json.data[i].brand.barcodeLength.join(",") + '</span>',
                                 'qty': json.data[i].qty
                             });
                     }
@@ -295,7 +298,7 @@
             });
         });
         $("#addValidation").submit(function(e){
-            if(!addBrandCheck)
+            if(!addBrandCheck ||  !$("#addValidation [name='barcodeLength']").val())
             {
                 e.preventDefault();
                 e.stopPropagation();
@@ -309,13 +312,21 @@
         });
 
         $("#Validation").submit(function(e){
-            if(!editBrandCheck)
+            
+            if(!editBrandCheck || !$("#Validation [name='barcodeLength']").val())
             {
                 e.preventDefault();
                 e.stopPropagation();
             }
         });
 
+        $("#addValidation [name='barcodeLength']").tagsinput({
+            trimValue: true
+        });
+        
+        $("#Validation [name='barcodeLength']").tagsinput({
+            trimValue: true
+        });
        
 
         $(document).on('click', "#brandTable td:not('.actions')", function () {
@@ -358,6 +369,10 @@
             $('#addValidation').hide();
             $('#Validation [name="id"]').val($(this).parents('tr').children().eq(0).find('span').eq(1).html());
             $('#Validation [name="name"]').val($(this).parents('tr').children().eq(0).find('span').eq(0).html());
+            $('#Validation [name="barcodeLength"]').tagsinput('removeAll');
+            $(this).parents('tr').children().eq(0).find('span').eq(2).html().split(",").forEach(barcodeLength=>{
+                $('#Validation [name="barcodeLength"]').tagsinput('add', barcodeLength);
+            });
         });
 
         function brandCheck(form)
@@ -369,10 +384,15 @@
     
                 if(name())
                 {
-                    $.post('{{admin_url}}brands/check', 
-                    {
+                    var data = {
                         name:name()
-                    },
+                    };
+
+                    if(form === "#Validation") {
+                        data._id = $(`${form} [name='id']`).val();
+                    }
+
+                    $.post('{{admin_url}}brands/check', data,
                      (data) => {
                         if(data.error)
                         {

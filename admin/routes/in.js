@@ -1,7 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/in',FX.adminAuth, (req, res, next)=>res.render('in.html'));
+router.get('/in',FX.adminAuth, (req, res, next)=>{
+    Brand.find({},'barcodeLength',(err, brand)=>{
+        if(err) return next(err);
+        res.render('in.html',{ barcodeLength: brand.map(brand=> brand.barcodeLength) });
+    });
+});
 
 router.post('/in',FX.adminAuth,function(req,res,next){
     var { barCode, invoice, date } = req.body;

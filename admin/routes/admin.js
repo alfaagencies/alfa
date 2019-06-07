@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 
 router.all('/',FX.adminAuth, (req, res, next)=>{
 	var data = {};
-	let lastMonth = new Date(new Date().setDate(1));
+	let lastMonth = new Date(new Date(new Date().setDate(1)).toISOString().substring(0,10));
 	Promise.all([
 		Stock.aggregate([
 			{

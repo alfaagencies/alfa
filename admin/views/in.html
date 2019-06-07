@@ -114,7 +114,7 @@
 </body>
 <script>
     /*For inlcuding variables at the top*/
-    var message;
+    var message, barcodes = new Set();
 </script>
 {% include "partials/core_js.html" %}
 {% import "macros/plugins.html" as plugins %}
@@ -133,6 +133,14 @@
         {% if messages.error %}
         demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
         {% endif %}
+
+        {% for barcodeLength in barcodeLength %}
+            "{{barcodeLength}}".split(",").forEach(barcode=>{
+                barcode && barcodes.add(barcode*1);
+            });
+        {% endfor %}
+
+        console.log("inside in manager--------->",barcodes);
 
         $('#inTable').DataTable({
             "pagingType": "full_numbers",
@@ -252,7 +260,7 @@
                 $('#barcode').on('input', function () {
                     var barCode = $(this).val();
                     var invoice = $('#invoice').val();
-                    if(invoice)
+                    if(invoice && barcodes.has(barCode.length))
                     {
                         setTimeout(() => $(this).val(''), 150);
                         getDataAndUpdateTable(barCode, invoice);
