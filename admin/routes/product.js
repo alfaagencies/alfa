@@ -55,7 +55,7 @@ router.get('/products/csv', FX.adminAuth, (req, res, next) => {
 router.get('/products',FX.adminAuth, (req, res, next)=>{
     Brand.find({ isArchive: false },'_id name',(err,brand)=>{
         if(err) return next(err);
-        res.render('product.html',{ brand });
+        res.render('product.html',{ brand, query: req.query.search || '' });
     });
 });
 
@@ -136,11 +136,11 @@ router.post('/products/add',FX.adminAuth,function(req,res,next){
 });
 
 router.post('/products/edit',FX.adminAuth,function(req,res,next){
-	var {id,brand,...body}=req.body;
+	var {id,brand,query,...body}=req.body;
     Product.findByIdAndUpdate(id,{$set:{brand:ObjectId(brand),...body}},function(err,result){
         if(err)return next(err);
         if(result)
-        res.redirect('/admin/products');        
+        res.redirect('/admin/products?search='+query);        
     });
 });
 router.get('/products/delete/:id',FX.adminAuth,function(req,res,next){

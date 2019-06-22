@@ -128,6 +128,7 @@
                         <div id="message">
                         </div>
                         {{form.hidden('id',body.id,'')}}
+                        {{form.hidden('query',body.query,'')}}
 
                         <div class="form-group">
                             <select name="brand" class="selectpicker" data-title="Select Brand" data-style="btn-default btn-outline"
@@ -331,6 +332,8 @@
                 ]
         }).column(0).visible(false);
 
+        $('#productTable').DataTable().search('{{query}}').draw();
+        
         $('.csv').click(() => {
             var fileName = 'Alfa Agencies' + '_' + 'Products' + '_' + new Date().toLocaleString() + '.csv';
             $.get('{{admin_url}}products/csv', function (data) {
@@ -343,7 +346,9 @@
 
         $(document).on('click', '.edit', function () {
             var id = $(this).parents('tr').find('td').eq(0).find('span').eq(2).html();
+            var table = $('#productTable').DataTable();
             $('#Validation [name="id"]').val(id);
+            $('#Validation [name="query"]').val(table.search());
             $('#Validation [name="brand"]').selectpicker('val',$(this).parents('tr').find('td').eq(0).find('span').eq(1).html());
             $('#Validation [name="styleCode"]').val($(this).parents('tr').find('td').eq(1).html());
             $('#Validation [name="mrp"]').val($(this).parents('tr').find('td').eq(2).html());
