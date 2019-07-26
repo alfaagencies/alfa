@@ -232,20 +232,20 @@
 
         $('#historyTable').on( 'click', 'td:nth-child(2)', function (e) {
             var table = $('#historyTable').DataTable();
-            var row = table.rows({ page: 'current' }).data()[table.page.info().start+$(this).closest("tr").index()];
+            var row = table.rows({ page: 'current' }).data()[$(this).closest("tr").index()];
             var invoiceTable = $('#invoiceTable').DataTable();
             invoiceTable.column(4).visible($('#type').val() === "in" ? true : isAdmin);
             invoiceTable.clear().draw();
             getDataAndUpdateInvoiceTable(row[0]);
             $("#showInvoiceHeader").html('');
-            $("#showInvoiceHeader").html(row[2]+" - "+ row[1])
+            $("#showInvoiceHeader").html(row[2]+" - "+ row[1]);
             $("#Validation [name='invoice']").val(row[0]);
             // $( $('#invoiceTable').DataTable().column( 5 ).footer() ).html('Total '+row[3]);
         });
  
         $('#invoiceTable').on( 'click', 'td:nth-child(5)', function (e) {
             var table = $('#invoiceTable').DataTable();
-            var row = table.rows({ page: 'current' }).data()[table.page.info().start+$(this).closest("tr").index()];
+            var row = table.rows({ page: 'current' }).data()[$(this).closest("tr").index()];
             $("#Validation [name='barCode']").val(row[0]);
             $("#Validation [name='type']").val($('#type').val());
             $("#Validation [name='qty']").val(row[row.length - 1].replace(/<[^>]*>/g, ""));
