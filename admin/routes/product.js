@@ -114,8 +114,13 @@ router.post('/products/find',FX.adminAuth,(req,res,next)=>{
 });
 
 router.post('/products/add',FX.adminAuth,function(req,res,next){
-	var { brand, styleCode, size } = req.body;
-	Product.findOne({ brand, styleCode, size },(err,result)=>{
+	var { brand, styleCode, size, barCode } = req.body;
+	Product.findOne({
+		$or:[
+			{ brand, styleCode, size },
+			{ barCode }
+		] 
+	},(err,result)=>{
 		if(err)return next(err);
 		if(!result)
 		{
