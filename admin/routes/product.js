@@ -130,14 +130,11 @@ router.post('/products/add',FX.adminAuth,function(req,res,next){
 			});
 		}
 		else{
-			// req.flash('error','Product Already Exist');
+			req.flash('error','Product Already Exist');
 			// res.locals.messages=req.flash();
 			Brand.find({ isArchive: false },'_id name',(err,brand)=>{
 				if(err) return next(err);
-				res.render('product.html',{ 
-					brand,
-					error: "Product Already Exist" 
-				});
+				res.render('product.html',{ brand });
 			});
 		}
 	});
