@@ -251,7 +251,7 @@
 
     $(document).ready(function () {
 
-        {% if error_flash %}
+        {% if error_flash or error %}
         demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
         {% endif %}
 
