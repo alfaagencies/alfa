@@ -251,7 +251,11 @@
 
     $(document).ready(function () {
 
-        {% if error_flash or error %}
+        {% if error %}
+        demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
+        {% endif %}
+
+        {% if error_flash %}
         demo.showNotification('top', 'center', '{{ error_flash }}', 'danger', 'nc-icon');
         {% endif %}
 
