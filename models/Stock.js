@@ -14,7 +14,10 @@ var stockSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Brand"
     },
-    type:String,
+    type:{
+        type:String,
+        trim: true
+    },
     qty:{
         type:Number,
         default:0

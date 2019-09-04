@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var invoiceSchema = new Schema({
 	invoice:{
         type:String,
-        required: true
+        required: true,
+        trim: true
     },
     completed:{
         type:Boolean,

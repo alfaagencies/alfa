@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var brandSchema = new Schema({
 	name:{
 		type:String,
-		uppercase: true
+		uppercase: true,
+		trim: true
 	},
 	isArchive: {
 		type: Boolean,

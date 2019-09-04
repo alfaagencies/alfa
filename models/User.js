@@ -5,12 +5,14 @@ var userSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		uppercase: true
+		uppercase: true,
+		trim: true
 	},
 	city: {
 		type: String,
 		default: '',
-		uppercase: true
+		uppercase: true,
+		trim:true
 	},
 	password:  String,
 	isAdmin: {

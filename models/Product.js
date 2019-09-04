@@ -8,11 +8,15 @@ var productSchema = new Schema({
     },
 	styleCode:{ 
 		type:String,
-		uppercase: true
+		uppercase: true,
+		trim: true
 	},
     mrp:Number,
     size:Number,
-	barCode:String,
+	barCode:{
+		type:String,
+		trim: true
+	},
 	qty:{
 		type:Number,
 		default: 0
