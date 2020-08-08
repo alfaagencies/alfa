@@ -37,6 +37,7 @@ router.get('/brands/csv', FX.adminAuth, (req, res, next) => {
 			{ key: "brand", header: "Brand" },
 			{ key: "styleCode", header: "Style With Color" },
 			{ key: "mrp", header: "MRP" },
+			{ key: "0", header: "0" },
 			{ key: "1", header: "1" },
 			{ key: "2", header: "2" },
 			{ key: "3", header: "3" },
@@ -57,6 +58,7 @@ router.get('/brands/csv', FX.adminAuth, (req, res, next) => {
 				
 				if(element.totalQty > 0) {
 					var obj = {
+						"0": "",
 						"1": "",
 						"2": "",
 						"3": "",
